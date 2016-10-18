@@ -1,5 +1,8 @@
 <?php
 namespace Transact\Admin;
+use Transact\Admin\Settings\Menu\AdminSettingsMenuExtension;
+
+require_once  plugin_dir_path(__FILE__) . '/controllers/transact-admin-settings-menu.php';
 
 /**
  * Class DashboardExtension
@@ -11,23 +14,17 @@ class DashboardExtension
      */
     public function hookToDashboard()
     {
-        add_action( 'admin_menu', array($this, 'add_transact_menu' ));
+        /**
+         * Dashboard Menu Hook
+         */
+        (new AdminSettingsMenuExtension())->hookToDashboard();
 
+        /**
+         * Post Settings Hook
+         */
     }
 
-    public function add_transact_menu()
-    {
-        add_menu_page( 'transact.io', 'transact.io', 'manage_options', 'transact-admin-page.php', array($this, 'transact_io_admin_callback'), 'dashicons-cart' );
-    }
 
-    public function transact_io_admin_callback()
-    {
-        ?>
-        <div class="wrap">
-            <h2>transact.io Account</h2>
-        </div>
-        <?php
-    }
 
 
 }
