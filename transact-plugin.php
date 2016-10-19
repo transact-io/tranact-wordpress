@@ -22,6 +22,7 @@ require_once( plugin_dir_path(__FILE__) . 'admin/transact-admin.php' );
  * Define all constants
  */
 define('TRANSACT_PATH', dirname( __FILE__ ));
+define('CONFIG_PATH', dirname( __FILE__ ) . '/config.ini');
 
 /**
  * Hooking functionality to Dashboard

@@ -2,6 +2,17 @@
     <h1>transact.io Account</h1>
 </div>
 <div class="clear"></div>
+
+<?php if (get_transient(self::SETTING_VALIDATION_TRANSIENT)): ?>
+    <div class="notice notice-success">
+        <p>Your credentials are good</p>
+    </div>
+<?php else : ?>
+    <div class="error">
+        <p>Your credentials are wrong, please check them on transact.io</p>
+    </div>
+<?php endif; ?>
+
 <form method="post" action="options.php">
     <?php
         settings_fields( 'transact-settings' );
