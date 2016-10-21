@@ -3,7 +3,7 @@
 </div>
 <div class="clear"></div>
 
-<?php if (get_transient(self::SETTING_VALIDATION_TRANSIENT)): ?>
+<?php if (get_transient(SETTING_VALIDATION_TRANSIENT)): ?>
     <div class="notice notice-success">
         <p>Your credentials are good</p>
     </div>

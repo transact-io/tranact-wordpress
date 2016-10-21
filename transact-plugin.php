@@ -25,6 +25,11 @@ define('TRANSACT_PATH', dirname( __FILE__ ));
 define('CONFIG_PATH', dirname( __FILE__ ) . '/config.ini');
 
 /**
+ * Transient that holds validation status
+ */
+define('SETTING_VALIDATION_TRANSIENT', 'setting_validation_transient');
+
+/**
  * Hooking functionality to Dashboard
  */
 (new DashboardExtension())->hookToDashboard();

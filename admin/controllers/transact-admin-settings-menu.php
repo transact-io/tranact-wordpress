@@ -14,11 +14,6 @@ require_once  plugin_dir_path(__FILE__) . '/transact-api.php';
 class AdminSettingsMenuExtension
 {
     /**
-     * Transient that holds validation status
-     */
-    const SETTING_VALIDATION_TRANSIENT = 'setting_validation_transient';
-
-    /**
      * All hooks to dashboard
      */
     public function hookToDashboard()
@@ -166,9 +161,9 @@ class AdminSettingsMenuExtension
             $validate_url = (new AdminConfigParser())->getValidationUrl();
             $response = (new TransactApi())->validates($validate_url, $_POST['transact-settings']['account_id'], $_POST['transact-settings']['secret_key']);
             if ($response) {
-                set_transient( self::SETTING_VALIDATION_TRANSIENT, 1, 0);
+                set_transient( SETTING_VALIDATION_TRANSIENT, 1, 0);
             } else {
-                set_transient( self::SETTING_VALIDATION_TRANSIENT, 0, 0);
+                set_transient( SETTING_VALIDATION_TRANSIENT, 0, 0);
             }
         }
     }
