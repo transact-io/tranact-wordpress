@@ -15,8 +15,13 @@ namespace Transact;
 /**
  * Requires
  */
+use PM\Freelance\Frontend\FrontendExtension;
 use Transact\Admin\DashboardExtension;
 require_once( plugin_dir_path(__FILE__) . 'admin/transact-admin.php' );
+
+use Transact\FrontEnd\Controllers\Post\FrontEndPostExtension;
+require_once( plugin_dir_path(__FILE__) . 'frontend/controllers/transact-single-post.php' );
+
 
 /**
  * Define all constants
@@ -33,4 +38,9 @@ define('SETTING_VALIDATION_TRANSIENT', 'setting_validation_transient');
  * Hooking functionality to Dashboard
  */
 (new DashboardExtension())->hookToDashboard();
+
+/**
+ * Hooking functionality to Single Post Frontend
+ */
+(new FrontEndPostExtension())->hookSinglePost();
 
