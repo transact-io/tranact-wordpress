@@ -1,8 +1,8 @@
 <?php
 namespace Transact\Admin\Settings\Menu;
 
-use Transact\Admin\Config\Parser\AdminConfigParser;
-require_once  plugin_dir_path(__FILE__) . '/transact-admin-config-parser.php';
+use Transact\Utils\Config\Parser\ConfigParser;
+require_once  plugin_dir_path(__FILE__) . '/../../utils/transact-utils-config-parser.php';
 
 use Transact\Admin\Api\TransactApi;
 require_once  plugin_dir_path(__FILE__) . '/transact-api.php';
@@ -158,7 +158,7 @@ class AdminSettingsMenuExtension
         if (isset($_POST['option_page']) && ($_POST['option_page'] == 'transact-settings'))
         {
             $_POST['transact-settings'] = filter_var_array($_POST['transact-settings'], FILTER_SANITIZE_STRING);
-            $validate_url = (new AdminConfigParser())->getValidationUrl();
+            $validate_url = (new ConfigParser())->getValidationUrl();
             $response = (new TransactApi())->validates($validate_url, $_POST['transact-settings']['account_id'], $_POST['transact-settings']['secret_key']);
             if ($response) {
                 set_transient( SETTING_VALIDATION_TRANSIENT, 1, 0);
