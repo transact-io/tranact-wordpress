@@ -72,6 +72,8 @@ class FrontEndPostExtension
     }
 
     /**
+     * First we check if the settings have been set on the Dashboard,
+     * after:
      * We want the previous filters to work only on the proper scope
      * and that is single posts.
      *
@@ -79,7 +81,7 @@ class FrontEndPostExtension
      */
     public function check_scope()
     {
-        if (is_single() && get_post_type() == 'post') {
+        if (get_transient(SETTING_VALIDATION_TRANSIENT) && is_single() && get_post_type() == 'post') {
             return true;
         } else {
             return false;
