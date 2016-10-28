@@ -28,6 +28,9 @@ require_once( plugin_dir_path(__FILE__) . 'frontend/controllers/transact-single-
  */
 define('TRANSACT_PATH', dirname( __FILE__ ));
 define('CONFIG_PATH', dirname( __FILE__ ) . '/config.ini');
+define('VENDORS_PATH', dirname( __FILE__ ) . '/vendors/');
+define('VENDORS_URL', plugins_url('/vendors/transact-io-php/', __FILE__));
+define('FRONTEND_ASSETS_URL', plugins_url('/frontend/assets/', __FILE__));
 
 /**
  * Transient that holds validation status

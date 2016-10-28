@@ -31,7 +31,13 @@ class FrontEndPostExtension
     {
         $this->config = new ConfigParser();
         add_filter( 'the_content', array($this, 'filter_pre_get_content' ));
-        add_action('wp_enqueue_scripts', array($this, 'load_js_xsact_library'));
+        add_action( 'wp_enqueue_scripts', array($this, 'load_js_xsact_library'));
+
+        /*
+         * Registering Ajax Calls on single post
+         */
+        add_action( 'wp_ajax_nopriv_request-callback', array($this, 'request_callback' ));
+        add_action( 'wp_ajax_request_request-callback', array($this, 'request_callback' ));
     }
 
     /**
@@ -67,8 +73,32 @@ class FrontEndPostExtension
         if (!$this->check_scope()) {
             return;
         }
-
+        /**
+         * Loading external library (JS API)
+         */
         wp_enqueue_script('xsact', $this->config->getJSLibrary());
+        $url = array(
+            'url' => plugins_url('/ajax/ajax-call.php', __FILE__),
+            'ajaxurl' => admin_url( 'admin-ajax.php' )
+        );
+
+        /**
+         * Loading transact scripts (callbacks)
+         */
+        wp_register_script( 'transact_callback',  FRONTEND_ASSETS_URL . 'transact_post.js', array('jquery') );
+        wp_localize_script( 'transact_callback', 'url', $url );
+        wp_enqueue_script(  'transact_callback' );
+
+
+    }
+
+    public function request_callback()
+    {
+        echo 'hola';die;
+        $transact = new TransactApi();
+        var_dump($transact);die;
+        $transact->get_request();
+
     }
 
     /**
