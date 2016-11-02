@@ -26,49 +26,15 @@ class TransactApi
         $this->transact->setAlg('HS256');
     }
 
-    function get_request()
+    function get_token()
     {
-        header('Content-Type: text/javascript; charset=utf8');
+        $transact = $this->InitSaleParameters($this->transact);
 
-        switch($_REQUEST['action']) {
-
-            case 'getToken':
-                $transact = InitSaleParameters($this->transact);
-                $response = array(
-                    'token' => $transact->getToken()
-                );
-                echo json_encode($response);
-                break;
-
-            case 'getPurchasedContent':
-
-                try {
-                    $decoded = $this->transact->decodeToken($_REQUEST['t']);
-                    echo json_encode(array(
-                        'content' => 'SUCESSS PAID CONTENT HERE!',
-                        'status' => 'OK',
-                        'decoded' => $decoded
-                    ));
-                } catch (Exception $e) {
-
-                    echo json_encode(array(
-                        'content' => 'Failed validation',
-                        'status' => 'ERROR',
-                        'message' =>  $e->getMessage(),
-                    ));
-                }
-
-                break;
-            default:
-                header("HTTP/1.0 404 Not Found");
-
-                echo json_encode(new ErrorResponse('404', 'Invalid API call'));
-                exit;
-        };
+        $response = array(
+            'token' => $transact->getToken()
+        );
+        return json_encode($response);
     }
-
-
-
 
     function InitSaleParameters($transact) {
 
@@ -109,6 +75,48 @@ class TransactApi
         return $transact;
     }
 
+
+    function get_request()
+    {
+        header('Content-Type: text/javascript; charset=utf8');
+
+        switch($_REQUEST['action']) {
+
+            case 'get_token':
+                $transact = InitSaleParameters($this->transact);
+
+                $response = array(
+                    'token' => $transact->getToken()
+                );
+                echo json_encode($response);
+                break;
+
+            case 'getPurchasedContent':
+
+                try {
+                    $decoded = $this->transact->decodeToken($_REQUEST['t']);
+                    echo json_encode(array(
+                        'content' => 'SUCESSS PAID CONTENT HERE!',
+                        'status' => 'OK',
+                        'decoded' => $decoded
+                    ));
+                } catch (Exception $e) {
+
+                    echo json_encode(array(
+                        'content' => 'Failed validation',
+                        'status' => 'ERROR',
+                        'message' =>  $e->getMessage(),
+                    ));
+                }
+
+                break;
+            default:
+                header("HTTP/1.0 404 Not Found");
+
+                echo json_encode(new ErrorResponse('404', 'Invalid API call'));
+                exit;
+        };
+    }
 
 
 

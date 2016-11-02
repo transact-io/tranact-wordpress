@@ -36,8 +36,8 @@ class FrontEndPostExtension
         /*
          * Registering Ajax Calls on single post
          */
-        add_action( 'wp_ajax_nopriv_request-callback', array($this, 'request_callback' ));
-        add_action( 'wp_ajax_request_request-callback', array($this, 'request_callback' ));
+        add_action( 'wp_ajax_nopriv_get_token', array($this, 'request_token_callback' ));
+        add_action( 'wp_ajax_get_token',        array($this, 'request_token_callback' ));
     }
 
     /**
@@ -92,13 +92,13 @@ class FrontEndPostExtension
 
     }
 
-    public function request_callback()
+    public function request_token_callback()
     {
-        echo 'hola';die;
         $transact = new TransactApi();
-        var_dump($transact);die;
-        $transact->get_request();
-
+        $token = $transact->get_token();
+        header('Content-Type: text/javascript; charset=utf8');
+        echo $token;
+        exit;
     }
 
     /**

@@ -4,26 +4,18 @@ var package = {};
 jQuery(function() {
 
     var ajax_url = url.ajaxurl;
-    var input_data = {
-        'action'  : 'get_token',
-    };
-    jQuery.get(ajax_url, input_data).done(function(data){
 
-        console.log(data);
-    });
-
-
-
-    /**jQuery.getJSON(url.url, { 'action' : 'getToken' })
-        .done(function(data) {
+    jQuery.getJSON(ajax_url, { 'action' : 'get_token' })
+        .success(function(data) {
             console.log('got token: '+ data.token);
             transactApi.setToken(data.token);
-
         })
-        .fail(function(resp_data) {
-            console.log('Error Response data:', resp_data);
-            return;
-        });**/
+        .fail(function(data) {
+            console.log('Failed to get Transact token');
+        });
+
+
+
 });
 
 
