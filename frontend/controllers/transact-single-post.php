@@ -40,11 +40,17 @@ class FrontEndPostExtension
         add_filter( 'the_content', array($this, 'filter_pre_get_content' ));
         add_action( 'wp_enqueue_scripts', array($this, 'load_js_xsact_library'));
 
-        /*
+        /**
          * Registering Ajax Calls on single post
          */
         add_action( 'wp_ajax_nopriv_get_token', array($this, 'request_token_callback' ));
         add_action( 'wp_ajax_get_token',        array($this, 'request_token_callback' ));
+
+        /**
+         * Registering callback when user buys the item
+         */
+        add_action( 'wp_ajax_nopriv_get_purchased_content', array($this, 'purchased_content_callback' ));
+        add_action( 'wp_ajax_get_purchased_content',        array($this, 'purchased_content_callback' ));
     }
 
     /**
@@ -110,6 +116,32 @@ class FrontEndPostExtension
         $token = $transact->get_token();
         header('Content-Type: text/javascript; charset=utf8');
         echo $token;
+        exit;
+    }
+
+    public function purchased_content_callback()
+    {
+        $transact = new TransactApi($_REQUEST['post_id']);
+        $decoded = $transact->decode_token($_REQUEST['t']);
+        var_dump($decoded);die;
+
+        //header('Content-Type: text/javascript; charset=utf8');
+        try {
+            $decoded = $transact->decode_token($_REQUEST['t']);
+            var_dump($decoded);die;
+            echo json_encode(array(
+                'content' => 'SUCESSS PAID CONTENT HERE!',
+                'status' => 'OK',
+                'decoded' => $decoded
+            ));
+        } catch (Exception $e) {
+
+            echo json_encode(array(
+                'content' => 'Failed validation',
+                'status' => 'ERROR',
+                'message' =>  $e->getMessage(),
+            ));
+        }
         exit;
     }
 

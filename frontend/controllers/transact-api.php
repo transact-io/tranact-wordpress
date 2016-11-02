@@ -98,19 +98,23 @@ class TransactApi
      */
     function get_token()
     {
-        $transact = $this->init_sale_parameters($this->transact);
+        $this->init_sale_parameters($this->transact);
 
         $response = array(
-            'token' => $transact->getToken()
+            'token' => $this->transact->getToken()
         );
         return json_encode($response);
     }
 
+    function decode_token($token)
+    {
+        return $this->transact->decodeToken($token);
+    }
+
     /**
      * Init library with sales parameter for a given article
-     * 
+     *
      * @param \TransactIoMsg $transact
-     * @return \TransactIoMsg
      */
     function init_sale_parameters($transact)
     {
@@ -153,8 +157,6 @@ class TransactApi
             'your' => 'data',
             'anything' => 'you want'
         ));
-
-        return $transact;
     }
 
 
