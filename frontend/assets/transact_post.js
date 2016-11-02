@@ -5,7 +5,7 @@ jQuery(function() {
 
     var ajax_url = url.ajaxurl;
 
-    jQuery.getJSON(ajax_url, { 'action' : 'get_token' })
+    jQuery.getJSON(ajax_url, { 'action' : 'get_token', 'post_id' : url.post_id })
         .success(function(data) {
             console.log('got token: '+ data.token);
             transactApi.setToken(data.token);

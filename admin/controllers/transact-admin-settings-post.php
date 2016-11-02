@@ -7,12 +7,30 @@ namespace Transact\Admin\Settings\Post;
 class AdminSettingsPostExtension
 {
     /**
+     * @var Saves the post_id we are handling
+     */
+    protected $post_id;
+
+    /**
      * All hooks to dashboard
      */
     public function hookToDashboard()
     {
         add_action( 'add_meta_boxes',     array($this, 'add_transact_metadata_post') );
         add_action( 'save_post',          array($this, 'save_meta_box') );
+    }
+
+    /**
+     * If this class is initiated outside dashboard, we set post_id
+     * to ble able to consult metadata
+     *
+     * @param int|null $post_id
+     */
+    public function __construct($post_id = null)
+    {
+        if ($post_id) {
+            $this->post_id = $post_id;
+        }
     }
 
     /**
@@ -142,6 +160,24 @@ class AdminSettingsPostExtension
         <br/>
         <?php
 
+    }
+
+    /**
+     * Get Transact price
+     * @return int
+     */
+    public function get_transact_price()
+    {
+        return get_post_meta( $this->post_id, 'transact_price', true );
+    }
+
+    /**
+     * Get Transact item code
+     * @return int
+     */
+    public function get_transact_item_code()
+    {
+        return get_post_meta( $this->post_id, 'transact_item_code', true );
     }
 
 }

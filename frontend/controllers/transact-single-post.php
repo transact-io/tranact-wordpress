@@ -25,6 +25,13 @@ class FrontEndPostExtension
     protected $config;
 
     /**
+     * Post id where this hook is called.
+     *
+     * @var int
+     */
+    protected $post_id;
+
+    /**
      * All hooks to single_post template
      */
     public function hookSinglePost()
@@ -56,7 +63,7 @@ class FrontEndPostExtension
             return $content;
         }
 
-        if ((new TransactApi())->is_premium()) {
+        if ((new TransactApi($this->post_id))->is_premium()) {
             $premium_content = get_post_meta( get_the_ID(), 'transact_premium_content' , true ) ;
             return $premium_content;
         } else {
@@ -73,13 +80,15 @@ class FrontEndPostExtension
         if (!$this->check_scope()) {
             return;
         }
+
         /**
          * Loading external library (JS API)
          */
         wp_enqueue_script('xsact', $this->config->getJSLibrary());
         $url = array(
             'url' => plugins_url('/ajax/ajax-call.php', __FILE__),
-            'ajaxurl' => admin_url( 'admin-ajax.php' )
+            'ajaxurl' => admin_url( 'admin-ajax.php' ),
+            'post_id' => $this->post_id
         );
 
         /**
@@ -88,13 +97,16 @@ class FrontEndPostExtension
         wp_register_script( 'transact_callback',  FRONTEND_ASSETS_URL . 'transact_post.js', array('jquery') );
         wp_localize_script( 'transact_callback', 'url', $url );
         wp_enqueue_script(  'transact_callback' );
-
-
     }
 
+    /**
+     * admin-ajax.php?action=get_token
+     * get_token ajax call handler to get and set Token from Transact (onload)
+     *
+     */
     public function request_token_callback()
     {
-        $transact = new TransactApi();
+        $transact = new TransactApi($_REQUEST['post_id']);
         $token = $transact->get_token();
         header('Content-Type: text/javascript; charset=utf8');
         echo $token;
@@ -106,11 +118,17 @@ class FrontEndPostExtension
      * after:
      * We want the previous filters to work only on the proper scope
      * and that is single posts.
+     * todo: check if the client has set up something on the post settings to have premium post
      *
      * @return bool
      */
     public function check_scope()
     {
+        /**
+         * Setting the post id, is the only scope where I can get it.
+         */
+        $this->post_id = get_the_ID();
+
         if (get_transient(SETTING_VALIDATION_TRANSIENT) && is_single() && get_post_type() == 'post') {
             return true;
         } else {
