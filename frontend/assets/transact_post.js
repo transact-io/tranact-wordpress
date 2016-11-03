@@ -62,16 +62,13 @@ function PurchasePopUpClosed(popup, event) {
                 // Set or Update Cookie
                 var cookie = getCookie('wp_transact_');
                 if (cookie != '') {
-                    cookie = JSON.parse(cookie);
+                    cookie_array = JSON.parse(cookie);
+                    var new_cookie = {};
+                    new_cookie['id']  = validation_data.post_id;
+                    new_cookie['uid'] = resp_data.decoded.uid;
+                    cookie_array.push(new_cookie);
 
-                    var new_cookie = [
-                            validation_data.post_id,
-                            [
-                                resp_data.decoded.uid
-                            ]
-                    ];
-                    cookie.push(new_cookie);
-                    setCookie('wp_transact_', JSON.stringify(cookie), 365);
+                    setCookie('wp_transact_', JSON.stringify(cookie_array), 365);
 
                 } else {
                     var new_cookie = {};
