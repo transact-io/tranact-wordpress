@@ -18,6 +18,13 @@ use Transact\Admin\Settings\Menu\AdminSettingsMenuExtension;
 require_once  plugin_dir_path(__FILE__) . '/../../admin/controllers/transact-admin-settings-post.php';
 use Transact\Admin\Settings\Post\AdminSettingsPostExtension;
 
+/**
+ * We need cookie manager
+ */
+require_once  plugin_dir_path(__FILE__) . '/transact-cookie-manager.php';
+use Transact\FrontEnd\Controllers\Cookie\CookieManager;
+
+
 
 /**
  * Class TransactApi
@@ -41,9 +48,9 @@ class TransactApi
     protected $secret_id;
     protected $env;
 
-    protected $price;
-    protected $item_id;
-    protected $item_name;
+    protected $price;     // price in tokens for the item
+    protected $item_id;   // unique code for article (Item code)
+    protected $sales_id;  // unique code for sale
 
     protected $article_title;
     protected $article_url;
@@ -78,7 +85,9 @@ class TransactApi
         $settings_post = new AdminSettingsPostExtension($this->post_id);
         $this->price     = $settings_post->get_transact_price();
         $this->item_id   = $settings_post->get_transact_item_code();
-        $this->item_name = $settings_post->get_transact_item_code();
+
+        // creates a uniqid, with item_id as prefix and then md5 (32 characters)
+        $this->sales_id  = md5(uniqid($this->item_id, true));
 
         $this->article_title = get_the_title($this->post_id);
         $this->article_url   = get_permalink($this->post_id);
@@ -143,11 +152,10 @@ class TransactApi
 
         // Unique code for seller to set to what they want
         //  This could be a code for the item your selling
-        //todo: what is this?
-        $transact->setItem($this->item_name);
+        $transact->setItem($this->item_id);
 
         // Optional Unique ID of this sale
-        $transact->setUid($this->item_id);
+        $transact->setUid($this->sales_id);
 
         // Set your own meta data
         // Note you must keep this short to avoid going over the 1024 byte limt
@@ -159,9 +167,20 @@ class TransactApi
         ));
     }
 
-    public function is_premium() {
-        return false;
+    /**
+     * It checks if a user have purchased the article
+     * it checks user cookie against Transaction table DB
+     *
+     * @return bool
+     */
+    public function is_premium()
+    {
+        $cookie_manager = new CookieManager();
+        if ($cookie_manager->validate_cookie($this->post_id)) {
+            return true;
+        } else {
+            return false;
+        }
     }
-
 
 }

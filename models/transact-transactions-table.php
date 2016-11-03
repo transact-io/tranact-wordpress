@@ -1,7 +1,6 @@
 <?php
 namespace Transact\Models\transactTransactionsTable;
 
-
 /**
  * Class transactTransactionsModel
  */
@@ -76,24 +75,24 @@ class transactTransactionsModel
      * Create a transaction record on the DB
      *
      * @param $post_id
-     * @param $sale_id
+     * @param $sales_id
      * @param $timestamp
      * @return bool
      */
-    public function create_transaction($post_id, $sale_id, $timestamp)
+    public function create_transaction($post_id, $sales_id, $timestamp)
     {
         try {
             $row = $this->connector->insert(
                 $this->table_name,
                 array(
                     self::POST_KEY      => $post_id,
-                    self::SALES_KEY     => $sale_id,
+                    self::SALES_KEY     => $sales_id,
                     self::TIMESTAMP_KEY => $timestamp
                 ),
                 array(
+                    '%d',
                     '%s',
-                    '%s',
-                    '%s'
+                    '%d'
                 )
             );
             if ($row) {

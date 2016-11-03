@@ -2,10 +2,13 @@
 namespace Transact\FrontEnd\Controllers\Post;
 
 use Transact\FrontEnd\Controllers\Api\TransactApi;
-require_once  plugin_dir_path(__FILE__) . '/transact-api.php';
+require_once  plugin_dir_path(__FILE__) . 'transact-api.php';
 
 use Transact\Utils\Config\Parser\ConfigParser;
-require_once  plugin_dir_path(__FILE__) . '/../../utils/transact-utils-config-parser.php';
+require_once  plugin_dir_path(__FILE__) . '../../utils/transact-utils-config-parser.php';
+
+use Transact\Models\transactTransactionsTable\transactTransactionsModel;
+require_once  plugin_dir_path(__FILE__) . '../../models/transact-transactions-table.php';
 
 
 /**
@@ -119,6 +122,9 @@ class FrontEndPostExtension
         exit;
     }
 
+    /**
+     *
+     */
     public function purchased_content_callback()
     {
         $transact = new TransactApi($_REQUEST['post_id']);
@@ -127,11 +133,13 @@ class FrontEndPostExtension
         try {
             $decoded = $transact->decode_token($_REQUEST['t']);
 
-            //$original_item_code = get_post_meta( $this->post_id, 'transact_item_code', true );
-            $premium_content    = get_post_meta( $_REQUEST['post_id'], 'transact_premium_content' , true ) ;
+            /**
+             * Creates a row on transaction table with purchase info
+             */
+            $tableModel = new transactTransactionsModel();
+            $tableModel->create_transaction($_REQUEST['post_id'], $decoded->uid, $decoded->iat);
 
                 echo json_encode(array(
-                    'content' => $premium_content,
                     'status' => 'OK',
                     'decoded' => $decoded
                 ));
@@ -163,10 +171,15 @@ class FrontEndPostExtension
          */
         $this->post_id = get_the_ID();
 
-        if (get_transient(SETTING_VALIDATION_TRANSIENT) && is_single() && get_post_type() == 'post') {
+        if (get_transient(SETTING_VALIDATION_TRANSIENT) &&
+            get_post_meta( $this->post_id, 'transact_item_code', true ) &&
+            is_single() &&
+            get_post_type() == 'post')
+        {
             return true;
         } else {
             return false;
         }
     }
 }
+
