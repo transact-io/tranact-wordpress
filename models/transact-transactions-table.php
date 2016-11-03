@@ -13,6 +13,13 @@ class transactTransactionsModel
     const TRANSACTIONS_TABLE_NAME = 'transact_transactions';
 
     /**
+     * KEys from the table
+     */
+    const POST_KEY      = 'post_id';
+    const SALES_KEY     = 'sales_id';
+    const TIMESTAMP_KEY = 'timestamp';
+
+    /**
      * WP DB connector
      *
      * @var \wpdb
@@ -49,7 +56,7 @@ class transactTransactionsModel
      */
     public function get_transactions_by_post_id($post_id)
     {
-        $sql = $this->connector->prepare("SELECT * FROM $this->table_name WHERE post_id='%s'", $post_id);
+        $sql = $this->connector->prepare("SELECT * FROM $this->table_name WHERE " . self::POST_KEY. " = '%s'", $post_id);
         $this->results = $this->connector->get_results( $sql, ARRAY_A );
         return $this->beautify_result($this->results);
     }
@@ -60,7 +67,7 @@ class transactTransactionsModel
      */
     public function get_transaction_by_sale_id($sale_id)
     {
-        $sql = $this->connector->prepare("SELECT * FROM $this->table_name WHERE sale_id='%s'", $sale_id);
+        $sql = $this->connector->prepare("SELECT * FROM $this->table_name WHERE  " . self::SALES_KEY. "='%s'", $sale_id);
         $this->results = $this->connector->get_results( $sql, ARRAY_A );
         return $this->beautify_result($this->results);
     }
@@ -79,9 +86,9 @@ class transactTransactionsModel
             $row = $this->connector->insert(
                 $this->table_name,
                 array(
-                    'post_id' => $post_id,
-                    'sale_id' => $sale_id,
-                    'timestamp' => $timestamp
+                    self::POST_KEY      => $post_id,
+                    self::SALES_KEY     => $sale_id,
+                    self::TIMESTAMP_KEY => $timestamp
                 ),
                 array(
                     '%s',
