@@ -73,7 +73,7 @@ class FrontEndPostExtension
             $premium_content = get_post_meta( get_the_ID(), 'transact_premium_content' , true ) ;
             return $premium_content;
         } else {
-            $button = '<button onclick="transactApi.authorize(PurchasePopUpClosed);">' . __(self::BUTTON_TEXT, 'transact') .'</button>';
+            $button = '<button id="button_purchase" onclick="transactApi.authorize(PurchasePopUpClosed);">' . __(self::BUTTON_TEXT, 'transact') .'</button>';
             return $content . $button;
         }
     }
@@ -122,18 +122,20 @@ class FrontEndPostExtension
     public function purchased_content_callback()
     {
         $transact = new TransactApi($_REQUEST['post_id']);
-        $decoded = $transact->decode_token($_REQUEST['t']);
-        var_dump($decoded);die;
 
-        //header('Content-Type: text/javascript; charset=utf8');
+        header('Content-Type: text/javascript; charset=utf8');
         try {
             $decoded = $transact->decode_token($_REQUEST['t']);
-            var_dump($decoded);die;
-            echo json_encode(array(
-                'content' => 'SUCESSS PAID CONTENT HERE!',
-                'status' => 'OK',
-                'decoded' => $decoded
-            ));
+
+            //$original_item_code = get_post_meta( $this->post_id, 'transact_item_code', true );
+            $premium_content    = get_post_meta( $_REQUEST['post_id'], 'transact_premium_content' , true ) ;
+
+                echo json_encode(array(
+                    'content' => $premium_content,
+                    'status' => 'OK',
+                    'decoded' => $decoded
+                ));
+
         } catch (Exception $e) {
 
             echo json_encode(array(

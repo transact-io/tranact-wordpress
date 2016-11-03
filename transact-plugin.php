@@ -8,11 +8,6 @@
  */
 
 /**
- * Defining namespace for the plugin
- */
-namespace Transact;
-
-/**
  * Requires
  */
 use PM\Freelance\Frontend\FrontendExtension;
@@ -37,6 +32,7 @@ define('FRONTEND_ASSETS_URL', plugins_url('/frontend/assets/', __FILE__));
  */
 define('SETTING_VALIDATION_TRANSIENT', 'setting_validation_transient');
 
+
 /**
  * Hooking functionality to Dashboard
  */
@@ -46,4 +42,20 @@ define('SETTING_VALIDATION_TRANSIENT', 'setting_validation_transient');
  * Hooking functionality to Single Post Frontend
  */
 (new FrontEndPostExtension())->hookSinglePost();
+
+
+/**
+ * On Activation: Create table
+ */
+register_activation_hook(__FILE__, 'transact_activation');
+function transact_activation()
+{
+    require_once plugin_dir_path(__FILE__) . 'activation.php';
+}
+
+
+
+
+
+
 

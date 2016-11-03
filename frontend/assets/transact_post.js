@@ -34,11 +34,11 @@ function PurchasePopUpClosed(popup, event) {
         var jqxhr = jQuery.getJSON(ajax_url, validation_data)
             .done(function(resp_data) {
                 console.log('Success Response data:', resp_data);
-                //$('#paid_content').html(resp_data.content);
+                jQuery('#button_purchase').html(resp_data.content);
             })
             .fail(function(resp_data) {
                 console.log('Error Response data:', resp_data);
-                //$('#paid_content').html('purchase failed');
+                jQuery('#button_purchase').html('purchase failed');
             })
             .always(function() {
                 console.log( "finished" );
