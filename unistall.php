@@ -9,6 +9,7 @@ delete_transient( SETTING_VALIDATION_TRANSIENT );
 
 global $wpdb;
 
-$query  = "DROP TABLE `wp_transact_transactions`;";
+$table_name = $wpdb->prefix . 'transact_transactions';
+$query  = "DROP TABLE {$table_name};";
 require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 dbDelta($query);
