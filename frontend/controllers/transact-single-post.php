@@ -74,7 +74,8 @@ class FrontEndPostExtension
 
         if ((new TransactApi($this->post_id))->is_premium()) {
             $premium_content = get_post_meta( get_the_ID(), 'transact_premium_content' , true ) ;
-            return $premium_content;
+            // wpautop emulates normal wp editor behaviour (adding <p> automatically)
+            return wpautop(htmlspecialchars_decode($premium_content));
         } else {
             $button = '<button id="button_purchase" onclick="transactApi.authorize(PurchasePopUpClosed);">' . __(self::BUTTON_TEXT, 'transact') .'</button>';
             return $content . $button;
