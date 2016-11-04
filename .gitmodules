@@ -1,0 +1,3 @@
+[submodule "vendors/transact-io-php"]
+	path = vendors/transact-io-php
+	url = git@gitlab.com:transact/transact-io-php.git
