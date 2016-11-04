@@ -19,7 +19,7 @@ class FrontEndPostExtension
     /**
      * text to be included on the button
      */
-    const BUTTON_TEXT = 'Purchase on Xsact';
+    const BUTTON_TEXT = 'Purchase on Transact.io';
 
     /**
      * config controller
@@ -58,7 +58,7 @@ class FrontEndPostExtension
 
     /**
      * Hooks into content, if the user is premium for that content
-     * it will show the premium content for it, otherwise the normal one adding the button to buy on xsact.
+     * it will show the premium content for it, otherwise the normal one adding the button to buy on transact.io.
      *
      * @param string $content
      * @return string
