@@ -173,6 +173,7 @@ class FrontEndPostExtension
 
         if (get_transient(SETTING_VALIDATION_TRANSIENT) &&
             get_post_meta( $this->post_id, 'transact_item_code', true ) &&
+            get_post_meta( $this->post_id, 'transact_price', true ) &&
             is_single() &&
             get_post_type() == 'post')
         {

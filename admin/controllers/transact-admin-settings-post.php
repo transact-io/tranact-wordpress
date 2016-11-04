@@ -151,7 +151,7 @@ class AdminSettingsPostExtension
         <label for="transact_price">
             <?php _e( 'Premium Price', 'transact' ); ?>
         </label>
-        <input type="text" id="transact_price" name="transact_price" value="<?php echo esc_attr( $value[1] ); ?>" />
+        <input type="number" min="1" max="99999" id="transact_price" name="transact_price" value="<?php echo esc_attr( $value[1] ); ?>" />
         <br/>
         <label for="transact_item_code">
             <?php _e( 'Item Code', 'transact' ); ?>
