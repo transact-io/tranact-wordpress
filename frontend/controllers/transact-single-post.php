@@ -213,6 +213,14 @@ class FrontEndPostExtension
         }
     }
 
+    /**
+     *
+     * Hook for comments_array
+     * If the user is premium, it will be shown the comments, otherwise no
+     *
+     * @param $comments
+     * @return bool
+     */
     function comments_array($comments)
     {
         if ((new TransactApi($this->post_id))->is_premium() == false) {
