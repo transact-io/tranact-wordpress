@@ -38,7 +38,7 @@ class AdminSettingsPostExtension
      */
     public function add_transact_metadata_post()
     {
-        add_meta_box('transact_metadata', 'transact.io', array($this,'transact_metadata_post_callback'), 'post', 'advanced');
+        add_meta_box('transact_metadata', 'transact.io', array($this,'transact_metadata_post_callback'), array('post', 'page'), 'advanced');
     }
 
     /**

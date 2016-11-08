@@ -54,6 +54,13 @@ class FrontEndPostExtension
          */
         add_action( 'wp_ajax_nopriv_get_purchased_content', array($this, 'purchased_content_callback' ));
         add_action( 'wp_ajax_get_purchased_content',        array($this, 'purchased_content_callback' ));
+
+        /**
+         * Making sure comments are open only for premium users
+         */
+        add_filter( 'comments_array', array($this, 'comments_array'));
+        add_filter( 'comments_open', array($this, 'close_comments') );
+
     }
 
     /**
@@ -160,8 +167,7 @@ class FrontEndPostExtension
      * First we check if the settings have been set on the Dashboard,
      * after:
      * We want the previous filters to work only on the proper scope
-     * and that is single posts.
-     * todo: check if the client has set up something on the post settings to have premium post
+     * and that is single posts (singe_post templates) or pages.
      *
      * @return bool
      */
@@ -175,12 +181,52 @@ class FrontEndPostExtension
         if (get_transient(SETTING_VALIDATION_TRANSIENT) &&
             get_post_meta( $this->post_id, 'transact_item_code', true ) &&
             get_post_meta( $this->post_id, 'transact_price', true ) &&
-            is_single() &&
-            get_post_type() == 'post')
+            ((is_single() && get_post_type() == 'post') || get_post_type() == 'page'))
         {
             return true;
         } else {
             return false;
+        }
+    }
+
+    /**
+     * Hook for comments_open
+     * It decides if the user is not premium, cannot write on comments
+     *
+     * @param $open
+     * @return bool
+     */
+    function close_comments($open)
+    {
+        /**
+         * If the user is submitting the comment, we have to open the comments again
+         * on that step not detected by is_premium
+         */
+        if (strpos($_SERVER['REQUEST_URI'], 'wp-comments-post')) {
+            return $open;
+        }
+
+        if ((new TransactApi($this->post_id))->is_premium() == false) {
+            return false;
+        } else {
+            return $open;
+        }
+    }
+
+    /**
+     *
+     * Hook for comments_array
+     * If the user is premium, it will be shown the comments, otherwise no
+     *
+     * @param $comments
+     * @return bool
+     */
+    function comments_array($comments)
+    {
+        if ((new TransactApi($this->post_id))->is_premium() == false) {
+            return false;
+        } else {
+            return $comments;
         }
     }
 }
