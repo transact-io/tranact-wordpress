@@ -54,6 +54,13 @@ class FrontEndPostExtension
          */
         add_action( 'wp_ajax_nopriv_get_purchased_content', array($this, 'purchased_content_callback' ));
         add_action( 'wp_ajax_get_purchased_content',        array($this, 'purchased_content_callback' ));
+
+        /**
+         * Making sure comments are open only for premium users
+         */
+        add_filter( 'comments_array', array($this, 'comments_array'));
+        add_filter( 'comments_open', array($this, 'close_comments') );
+
     }
 
     /**
@@ -179,6 +186,39 @@ class FrontEndPostExtension
             return true;
         } else {
             return false;
+        }
+    }
+
+    /**
+     * Hook for comments_open
+     * It decides if the user is not premium, cannot write on comments
+     *
+     * @param $open
+     * @return bool
+     */
+    function close_comments($open)
+    {
+        /**
+         * If the user is submitting the comment, we have to open the comments again
+         * on that step not detected by is_premium
+         */
+        if (strpos($_SERVER['REQUEST_URI'], 'wp-comments-post')) {
+            return $open;
+        }
+
+        if ((new TransactApi($this->post_id))->is_premium() == false) {
+            return false;
+        } else {
+            return $open;
+        }
+    }
+
+    function comments_array($comments)
+    {
+        if ((new TransactApi($this->post_id))->is_premium() == false) {
+            return false;
+        } else {
+            return $comments;
         }
     }
 }
