@@ -160,8 +160,7 @@ class FrontEndPostExtension
      * First we check if the settings have been set on the Dashboard,
      * after:
      * We want the previous filters to work only on the proper scope
-     * and that is single posts.
-     * todo: check if the client has set up something on the post settings to have premium post
+     * and that is single posts (singe_post templates) or pages.
      *
      * @return bool
      */
@@ -175,8 +174,7 @@ class FrontEndPostExtension
         if (get_transient(SETTING_VALIDATION_TRANSIENT) &&
             get_post_meta( $this->post_id, 'transact_item_code', true ) &&
             get_post_meta( $this->post_id, 'transact_price', true ) &&
-            is_single() &&
-            get_post_type() == 'post')
+            ((is_single() && get_post_type() == 'post') || get_post_type() == 'page'))
         {
             return true;
         } else {
