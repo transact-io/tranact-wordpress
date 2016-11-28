@@ -2,7 +2,7 @@
 /*
  * Plugin Name: WP transact.io
  * Description: Integrates transact.io services into WP
- * Version: 0.0.1
+ * Version: 0.0.3
  * Author: transact.io
  * Author URI: http://www.transact.io
  */
