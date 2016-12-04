@@ -117,6 +117,8 @@ class TransactApi
 
     function decode_token($token)
     {
+        $this->transact->setSecret($this->secret_id);
+        $this->transact->setAlg($this->alg);
         return $this->transact->decodeToken($token);
     }
 
