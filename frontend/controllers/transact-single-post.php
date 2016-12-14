@@ -40,7 +40,7 @@ class FrontEndPostExtension
     public function hookSinglePost()
     {
         $this->config = new ConfigParser();
-        add_filter( 'the_content', array($this, 'filter_pre_get_content' ));
+        add_filter( 'the_content', array($this, 'filter_pre_get_content' ), 999);
         add_action( 'wp_enqueue_scripts', array($this, 'load_js_xsact_library'));
 
         /**
@@ -84,7 +84,7 @@ class FrontEndPostExtension
             // wpautop emulates normal wp editor behaviour (adding <p> automatically)
             return wpautop(htmlspecialchars_decode($premium_content));
         } else {
-            $button = '<button id="button_purchase" onclick="transactApi.authorize(PurchasePopUpClosed);">' . __(self::BUTTON_TEXT, 'transact') .'</button>';
+            $button = '<p><button id="button_purchase" onclick="transactApi.authorize(PurchasePopUpClosed);">' . __(self::BUTTON_TEXT, 'transact') .'</button></p>';
             return $content . $button;
         }
     }
