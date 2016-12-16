@@ -12,12 +12,18 @@ class AdminSettingsPostExtension
     protected $post_id;
 
     /**
+     * text to be included on the button
+     */
+    const BUTTON_TEXT_DEFAULT = 'Purchase on Transact.io';
+
+    /**
      * All hooks to dashboard
      */
     public function hookToDashboard()
     {
         add_action( 'add_meta_boxes',     array($this, 'add_transact_metadata_post') );
         add_action( 'save_post',          array($this, 'save_meta_box') );
+        add_shortcode( 'transact_button', array($this, 'transact_shortcode') );
     }
 
     /**
@@ -178,6 +184,25 @@ class AdminSettingsPostExtension
     public function get_transact_item_code()
     {
         return get_post_meta( $this->post_id, 'transact_item_code', true );
+    }
+
+    /**
+     * Creating shortcode to show the button on the editor.
+     *
+     * @param string $atts coming from shortcode can be "id" and "text"
+     * @return string $button button html
+     */
+    public function transact_shortcode( $atts )
+    {
+        $button = '<button id="{{button_id}}" onclick="transactApi.authorize(PurchasePopUpClosed);">{{button_text}}</button>';
+
+        $a = shortcode_atts( array(
+            'id'   => 'button_purchase',
+            'text' => __(self::BUTTON_TEXT_DEFAULT, 'transact'),
+        ), $atts );
+
+        $button = str_replace(array('{{button_id}}', '{{button_text}}'), array($a['id'], $a['text']), $button);
+        return $button;
     }
 
 }

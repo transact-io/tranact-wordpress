@@ -84,8 +84,12 @@ class FrontEndPostExtension
             // wpautop emulates normal wp editor behaviour (adding <p> automatically)
             return wpautop(htmlspecialchars_decode($premium_content));
         } else {
-            $button = '<p><button id="button_purchase" onclick="transactApi.authorize(PurchasePopUpClosed);">' . __(self::BUTTON_TEXT, 'transact') .'</button></p>';
-            return $content . $button;
+            global $post;
+            if (!has_shortcode($post->post_content, 'transact_button')) {
+                $button = '<p><button id="button_purchase" onclick="transactApi.authorize(PurchasePopUpClosed);">' . __(self::BUTTON_TEXT, 'transact') .'</button></p>';
+                $content =  $content . $button;
+            }
+            return $content;
         }
     }
 
