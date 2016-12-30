@@ -184,5 +184,9 @@ class TransactApi
             return false;
         }
     }
+    public function get_price()
+    {
+        return $this->price;
+    }
 
 }
