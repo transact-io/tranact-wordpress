@@ -19,7 +19,7 @@ class FrontEndPostExtension
     /**
      * text to be included on the button
      */
-    const BUTTON_TEXT = 'Purchase on Transact.io for';
+    const BUTTON_TEXT = 'Purchase with Transact for';
     const TOKENS_TEXT = 'tokens';
     const TOKEN_TEXT = 'token';
 
