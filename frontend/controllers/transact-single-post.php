@@ -19,7 +19,9 @@ class FrontEndPostExtension
     /**
      * text to be included on the button
      */
-    const BUTTON_TEXT = 'Purchase on Transact.io';
+    const BUTTON_TEXT = 'Purchase on Transact.io for';
+    const TOKENS_TEXT = 'tokens';
+    const TOKEN_TEXT = 'token';
 
     /**
      * config controller
@@ -78,15 +80,24 @@ class FrontEndPostExtension
         if (!$this->check_scope()) {
             return $content;
         }
-
-        if ((new TransactApi($this->post_id))->is_premium()) {
+        $transact_api = new TransactApi($this->post_id);
+        if ($transact_api->is_premium()) {
             $premium_content = get_post_meta( get_the_ID(), 'transact_premium_content' , true ) ;
             // wpautop emulates normal wp editor behaviour (adding <p> automatically)
             return wpautop(htmlspecialchars_decode($premium_content));
         } else {
             global $post;
             if (!has_shortcode($post->post_content, 'transact_button')) {
-                $button = '<p><button id="button_purchase" onclick="transactApi.authorize(PurchasePopUpClosed);">' . __(self::BUTTON_TEXT, 'transact') .'</button></p>';
+                $price = $transact_api->get_price();
+                $token_text = __(self::TOKENS_TEXT, 'transact');
+                // if singular token
+                if ($price == 1)
+                    $token_text = __(self::TOKEN_TEXT, 'transact');
+
+                $button = '<p><button id="button_purchase" onclick="transactApi.authorize(PurchasePopUpClosed);">'
+                    . __(self::BUTTON_TEXT, 'transact')
+                    . ' '.  $price . ' ' . $token_text
+                    .'</button></p>';
                 $content =  $content . $button;
             }
             return $content;
