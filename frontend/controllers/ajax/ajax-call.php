@@ -6,8 +6,6 @@ require_once __DIR__ . '/../transact-api.php';
 $transact = new TransactApi();
 $transact = $transact->returnTransactIoMsg();
 
-var_dump($transact);die;
-
 // all of our responses are JSOn
 header('Content-Type: text/javascript; charset=utf8');
 
