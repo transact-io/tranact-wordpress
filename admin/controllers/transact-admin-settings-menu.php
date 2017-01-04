@@ -90,6 +90,81 @@ class AdminSettingsMenuExtension
             array('environment')
         );
 
+        /*
+         * Post Types Manager
+         */
+        // API Transact Settings
+        add_settings_section(
+            'post_types',
+            __( 'Post Types', 'transact' ),
+            function() { _e('Enable Transact for Custom Post Types. By default Transact is available for posts and pages only.','transact'); },
+            'transact-settings'
+        );
+
+        // Adding Account ID field
+        add_settings_field(
+            'custom_post_types',
+            __( 'Custom Post Types', 'transact' ),
+            array($this, 'custom_post_types_callback'),
+            'transact-settings',
+            'post_types',
+            array('custom_post_types')
+        );
+
+    }
+
+    /**
+     * CPT Settings callback
+     * It will show all visible cpt and make the user select the ones they want transact on.
+     *
+     * @param $arg
+     */
+    public function custom_post_types_callback($arg)
+    {
+        $public_post_types = get_post_types(array('public' => true));
+
+        /*
+         * Wordpress will include by default post, page, attachment
+         * as Transact will have by default post and page, we avoid them
+         */
+        unset($public_post_types['post']);
+        unset($public_post_types['page']);
+        unset($public_post_types['attachment']);
+
+        $options = get_option('transact-settings');
+        $cpt_options = isset($options['cpt']) ? $options['cpt'] : array();
+        //var_dump($cpt_options);die;
+
+        ?>
+        <script>
+            // Handles checkbox for cpt
+            function setValue(id) {
+                if( jQuery(id).is(':checked')) {
+                    jQuery(id).val(1);
+                } else {
+                    jQuery(id).val(0);
+                }
+            }
+        </script>
+        <table>
+            <tr>
+                <?php foreach ($public_post_types as $key => $cpt): ?>
+                    <?php
+                        $cpt_selected = '';
+                        $checkbox_value = 0;
+                    
+                        if ($cpt_options) {
+                            $cpt_selected = ( (isset($cpt_options['cpt_' . $key])) && ($cpt_options['cpt_' . $key] == 1) ) ? 'checked' : '';
+                            $checkbox_value = ( $cpt_selected == 'checked') ? 1 : 0;
+                        }
+                    ?>
+                <td>
+                    <input <?php echo $cpt_selected; ?> type="checkbox" onclick="setValue(cpt_<?php echo $key;?>)" id="cpt_<?php echo $key;?>" name="transact-settings[cpt][cpt_<?php echo $key;?>]" value="<?php echo $checkbox_value; ?>" /><?php echo $key;?>
+                </td>
+                <?php endforeach; ?>
+            </tr>
+        </table>
+        <?php
     }
 
     /**
