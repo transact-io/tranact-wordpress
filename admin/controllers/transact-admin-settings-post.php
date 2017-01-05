@@ -116,8 +116,12 @@ class AdminSettingsPostExtension
         $content = htmlspecialchars( $_POST['transact_premium_content'] );
         update_post_meta( $post_id, 'transact_premium_content', $content );
 
+        /**
+         *
+         *  todo: comments premium future development
         $premium_comments = (isset($_POST['transact_premium_comments'])) ? sanitize_text_field( $_POST['transact_premium_comments'] ) : 0;
         update_post_meta( $post_id, 'transact_premium_comments', $premium_comments );
+         */
     }
 
 
@@ -144,8 +148,13 @@ class AdminSettingsPostExtension
         $value[1] = get_post_meta( $post->ID, 'transact_price', true );
         $value[2] = get_post_meta( $post->ID, 'transact_item_code', true );
         $value[3] = get_post_meta( $post->ID, 'transact_premium_content' , true ) ;
+
+        /**
+         *  todo: comments premium future development
+         *
         $value[4] = get_post_meta( $post->ID, 'transact_premium_comments' , true ) ;
         $premium_comment_selected = ($value[4] == 1) ? 'checked' : '';
+         **/
 
 
         /**
@@ -156,9 +165,15 @@ class AdminSettingsPostExtension
 
         /**
          * Rest of the form price
-         * Piece of JS to manage the checkbox
          */
         ?>
+
+        <?php
+
+        /**
+         *  * Piece of JS to manage the checkbox
+         *  todo: comments premium future development
+         *
         <script>
             // Handles checkbox for premium comments
             jQuery( document ).ready(function() {
@@ -171,6 +186,8 @@ class AdminSettingsPostExtension
                 });
             });
         </script>
+        **/
+        ?>
         <br/>
         <label for="transact_price">
             <?php _e( 'Premium Price', 'transact' ); ?>
@@ -182,11 +199,17 @@ class AdminSettingsPostExtension
         </label>
         <input readonly type="text" size="35" id="transact_item_code" name="transact_item_code" value="<?php echo esc_attr( $value[2] ); ?>" />
         <br/>
+        <?php
+        /**
+         *  todo: comments premium future development
+         *
         <label for="transact_premium_comments">
             <?php _e( 'Premium comments', 'transact' ); ?>
         </label>
         <input type="checkbox" id="transact_premium_comments" name="transact_premium_comments" value="<?php echo esc_attr( $value[4] ); ?>" <?php echo $premium_comment_selected; ?>/>
         <br/>
+         */
+        ?>
         <?php
 
     }

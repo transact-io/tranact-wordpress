@@ -244,5 +244,17 @@ class FrontEndPostExtension
             return $comments;
         }
     }
+
+    /**
+     * todo: not used yet, future development
+     * Get Premium Comment setting for the post
+     *
+     * @return bool
+     */
+    function premium_comments_settings()
+    {
+        $premium_comments = get_post_meta( $this->post_id, 'transact_premium_comments', true );
+        return ($premium_comments == 1) ? true : false;
+    }
 }
 
