@@ -133,8 +133,6 @@ class AdminSettingsMenuExtension
 
         $options = get_option('transact-settings');
         $cpt_options = isset($options['cpt']) ? $options['cpt'] : array();
-        //var_dump($cpt_options);die;
-
         ?>
         <script>
             // Handles checkbox for cpt

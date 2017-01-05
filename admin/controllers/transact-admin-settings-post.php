@@ -1,6 +1,9 @@
 <?php
 namespace Transact\Admin\Settings\Post;
 
+use Transact\Utils\Settings\cpt\SettingsCpt;
+require_once  plugin_dir_path(__FILE__) . '../../utils/transact-settings-cpt.php';
+
 /**
  * Class AdminSettingsPostExtension
  */
@@ -40,11 +43,13 @@ class AdminSettingsPostExtension
     }
 
     /**
-     * Includind transact.io metabox on post
+     * Including transact.io metabox on post
      */
     public function add_transact_metadata_post()
     {
-        add_meta_box('transact_metadata', 'transact.io', array($this,'transact_metadata_post_callback'), array('post', 'page'), 'advanced');
+        $enabled_by_default = array('post', 'page');
+        $cpts_to_enable = SettingsCpt::get_cpts_enable_for_transact();
+        add_meta_box('transact_metadata', 'transact.io', array($this,'transact_metadata_post_callback'), array_merge($enabled_by_default, $cpts_to_enable), 'advanced');
     }
 
     /**

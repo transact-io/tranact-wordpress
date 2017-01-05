@@ -10,6 +10,9 @@ require_once  plugin_dir_path(__FILE__) . '../../utils/transact-utils-config-par
 use Transact\Models\transactTransactionsTable\transactTransactionsModel;
 require_once  plugin_dir_path(__FILE__) . '../../models/transact-transactions-table.php';
 
+use Transact\Utils\Settings\cpt\SettingsCpt;
+require_once  plugin_dir_path(__FILE__) . '../../utils/transact-settings-cpt.php';
+
 
 /**
  * Class FrontEndPostExtension
@@ -182,7 +185,7 @@ class FrontEndPostExtension
      * First we check if the settings have been set on the Dashboard,
      * after:
      * We want the previous filters to work only on the proper scope
-     * and that is single posts (singe_post templates) or pages.
+     * and that is single posts (singe_post templates) or CPT enabled or pages
      *
      * @return bool
      */
@@ -196,7 +199,8 @@ class FrontEndPostExtension
         if (get_transient(SETTING_VALIDATION_TRANSIENT) &&
             get_post_meta( $this->post_id, 'transact_item_code', true ) &&
             get_post_meta( $this->post_id, 'transact_price', true ) &&
-            ((is_single() && get_post_type() == 'post') || get_post_type() == 'page'))
+            ((is_single() && (get_post_type() == 'post') || (in_array(get_post_type(), SettingsCpt::get_cpts_enable_for_transact()))) ||
+                get_post_type() == 'page'))
         {
             return true;
         } else {
