@@ -5,6 +5,7 @@ use Transact\Admin\Settings\Post\AdminSettingsPostExtension;
 
 require_once  plugin_dir_path(__FILE__) . '/controllers/transact-admin-settings-menu.php';
 require_once  plugin_dir_path(__FILE__) . '/controllers/transact-admin-settings-post.php';
+require_once  plugin_dir_path(__FILE__) . '/controllers/transact-admin-plugin-options.php';
 
 /**
  * Class DashboardExtension
