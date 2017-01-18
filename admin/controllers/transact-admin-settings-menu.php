@@ -220,15 +220,16 @@ class AdminSettingsMenuExtension
     /** 
      * Get the settings option array and print one of its values
      */
-    public function color_input_callback($field, $default_color)
+    public function color_input_callback($field, $default_color = NULL)
     {
         $field = current($field);
-        $default_color = current($default_color);
+        if(is_null($default_color)) {
+            $default_color = '#ffffff';
+        } else {
+            $default_color = current($default_color);
+        }
         $options = get_option('transact-settings');
 
-        if(!$default_color) {
-            $default_color = '#ffffff';
-        }
         printf(
             '<input type="color" id="%s" name="transact-settings[%s]" value="%s" />',
             $field, 
