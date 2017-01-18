@@ -111,6 +111,34 @@ class AdminSettingsMenuExtension
             array('custom_post_types')
         );
 
+        /*
+         * Button Styles Manager
+         */
+        add_settings_section(
+            'xct_button_style', // ID
+            'Purchase Button Settings', // Title
+            function() { _e('You can customize the visual appearance of the Purchase on Transact button here.','transact'); },
+            'transact-settings'
+        );  
+
+        add_settings_field(
+            'text_color', // ID
+            'Text Color', // Title 
+            array( $this, 'color_input_callback' ), // Callback
+            'transact-settings',
+            'xct_button_style', // Section,
+            array('text_color') // Default value
+        );      
+
+        add_settings_field(
+            'background_color', 
+            'Background Color', 
+            array( $this, 'color_input_callback' ), 
+            'transact-settings', 
+            'xct_button_style',
+            array('background_color', '#308030') // Default value
+        );
+
     }
 
     /**
@@ -189,6 +217,27 @@ class AdminSettingsMenuExtension
         }
     }
 
+    /** 
+     * Get the settings option array and print one of its values
+     */
+    public function color_input_callback($field, $default_color = NULL)
+    {
+        $field = current($field);
+        if(is_null($default_color)) {
+            $default_color = '#ffffff';
+        } else {
+            $default_color = current($default_color);
+        }
+        $options = get_option('transact-settings');
+
+        printf(
+            '<input type="color" id="%s" name="transact-settings[%s]" value="%s" />',
+            $field, 
+            $field,
+            isset( $options[$field] ) ? esc_attr( $options[$field]) : $default_color
+        );
+    }
+
     /**
      * Gets Account ID from Settings
      *
@@ -218,6 +267,19 @@ class AdminSettingsMenuExtension
     {
         $options = get_option('transact-settings');
         return $options['environment'];
+    }
+
+    /**
+     * Gets css settings from Settings
+     * @return string
+     */
+    public function get_button_style()
+    {
+        $options = get_option('transact-settings');
+        return array(
+            'text_color' => (isset($options['text_color']) ? $options['text_color'] : ''),
+            'background_color' => (isset($options['background_color']) ? $options['background_color'] : ''),
+        );
     }
 
     /**

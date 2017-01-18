@@ -77,6 +77,7 @@ class FrontEndPostExtension
      */
     public function filter_pre_get_content($content)
     {
+        $options = get_option( 'transact-settings' );
         /**
          * If it is not the scope, we return the normal content (could be used in a archive for instance)
          */
@@ -97,10 +98,13 @@ class FrontEndPostExtension
                 if ($price == 1)
                     $token_text = __(self::TOKEN_TEXT, 'transact');
 
-                $button = '<p><button id="button_purchase" onclick="transactApi.authorize(PurchasePopUpClosed);">'
-                    . __(self::BUTTON_TEXT, 'transact')
-                    . ' '.  $price . ' ' . $token_text
-                    .'</button></p>';
+                $button = '<p><button class="transact_purchase_button"  style="' . 
+                    (isset($options['background_color']) ? 'background-color:' . esc_attr($options['background_color']) . ';' : '') . 
+                    (isset($options['text_color']) ? 'color:' . esc_attr($options['text_color']) . ';' : '') . 
+                    '" id="button_purchase" onclick="transactApi.authorize(PurchasePopUpClosed);">' . 
+                    __(self::BUTTON_TEXT, 'transact') .
+                    ' '.  $price . ' ' . $token_text .
+                    '</button></p>';
                 $content =  $content . $button;
             }
             return $content;

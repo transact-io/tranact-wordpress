@@ -1,0 +1,19 @@
+.transact_purchase_button {
+  background-color: #308030;
+  color: white;
+  font-size: 10pt;
+  border: 0;
+  border-radius: 3px;
+  padding: 6px 16px;
+  padding-left: 33px;
+  font-weight: 500;
+  cursor: pointer;
+  background-image: url('transact_icon.png');
+  background-repeat: no-repeat;
+  background-size: 14px;
+  background-position: 13px 50%;
+}
+
+body.toplevel_page_transact-admin-page input[type='color'] {
+  padding: 0px 2px;
+}
