@@ -18,6 +18,8 @@ require_once( plugin_dir_path(__FILE__) . 'admin/transact-admin.php' );
 use Transact\FrontEnd\Controllers\Post\FrontEndPostExtension;
 require_once( plugin_dir_path(__FILE__) . 'frontend/controllers/transact-single-post.php' );
 
+wp_enqueue_style( 'transact-plugin-style', plugin_dir_url( __FILE__ ) . 'style.css' );
+
 
 /**
  * Define all constants

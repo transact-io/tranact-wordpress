@@ -97,10 +97,11 @@ class FrontEndPostExtension
                 if ($price == 1)
                     $token_text = __(self::TOKEN_TEXT, 'transact');
 
-                $button = '<p><button id="button_purchase" onclick="transactApi.authorize(PurchasePopUpClosed);">'
-                    . __(self::BUTTON_TEXT, 'transact')
-                    . ' '.  $price . ' ' . $token_text
-                    .'</button></p>';
+                $button = '<p><button class="transact_purchase_button"  style="' . 
+                    '" id="button_purchase" onclick="transactApi.authorize(PurchasePopUpClosed);">' . 
+                    __(self::BUTTON_TEXT, 'transact') .
+                    ' '.  $price . ' ' . $token_text .
+                    '</button></p>';
                 $content =  $content . $button;
             }
             return $content;
