@@ -245,7 +245,7 @@ class AdminSettingsPostExtension
      */
     public function transact_shortcode( $atts )
     {
-        $options = get_option( 'transact_settings' );
+        $options = get_option( 'transact-settings' );
 
         $button = '<button id="{{button_id}}" style="' . 
             (isset($options['background_color']) ? 'background-color:' . esc_attr($options['background_color']) . ';' : '') . 

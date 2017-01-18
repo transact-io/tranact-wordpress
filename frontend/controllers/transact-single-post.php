@@ -77,7 +77,7 @@ class FrontEndPostExtension
      */
     public function filter_pre_get_content($content)
     {
-        $options = get_option( 'transact_settings' );
+        $options = get_option( 'transact-settings' );
         /**
          * If it is not the scope, we return the normal content (could be used in a archive for instance)
          */
