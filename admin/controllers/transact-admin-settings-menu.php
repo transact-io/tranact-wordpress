@@ -232,7 +232,7 @@ class AdminSettingsMenuExtension
     public function color_input_callback($args)
     {
         $field = $args[0];
-        if(!isset($args[1])) {
+        if(empty($args[1])) {
             $default_color = '#ffffff';
         } else {
             $default_color = $args[1];
