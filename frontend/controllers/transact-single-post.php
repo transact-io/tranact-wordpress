@@ -98,13 +98,22 @@ class FrontEndPostExtension
                 if ($price == 1)
                     $token_text = __(self::TOKEN_TEXT, 'transact');
 
-                $button = '<p><button class="transact_purchase_button"  style="' . 
-                    (isset($options['background_color']) ? 'background-color:' . esc_attr($options['background_color']) . ';' : '') . 
-                    (isset($options['text_color']) ? 'color:' . esc_attr($options['text_color']) . ';' : '') . 
-                    '" id="button_purchase" onclick="transactApi.authorize(PurchasePopUpClosed);">' . 
-                    __(self::BUTTON_TEXT, 'transact') .
-                    ' '.  $price . ' ' . $token_text .
-                    '</button></p>';
+                $button_background_color_style = (isset($options['background_color']) ? 'background-color:' . esc_attr($options['background_color']) . ';' : '');
+                $button_text_color_style = (isset($options['text_color']) ? 'color:' . esc_attr($options['text_color']) . ';' : '');
+                $background_fade_color_style = '';
+                if(isset($options['page_background_color'])) {
+                    list($r, $g, $b) = sscanf($options['page_background_color'], "#%02x%02x%02x");
+                    $background_fade_color_style = "background:linear-gradient(to bottom, rgba($r,$g,$b,0), rgba($r,$g,$b,1) 68%, rgba($r,$g,$b,1))";
+                }
+
+                $button = '<div class="transact_purchase_button fade" style="' .
+                    $background_fade_color_style . '">' .
+                        '<button style="' . $button_background_color_style . $button_text_color_style . 
+                        '" id="button_purchase" onclick="transactApi.authorize(PurchasePopUpClosed);">' . 
+                        __(self::BUTTON_TEXT, 'transact') .
+                        ' '.  $price . ' ' . $token_text .
+                        '</button>
+                    </div>';
                 $content =  $content . $button;
             }
             return $content;
