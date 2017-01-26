@@ -1,11 +1,11 @@
 <?php
 /*
- * Plugin Name: WP transact.io
+ * Plugin Name: transact.io
  * Description: Integrates transact.io services into WP
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author: transact.io
  * Author URI: https://transact.io
- * Plugin URI: https://gitlab.com/transact/transact-wordpress/
+ * Plugin URI: https://wordpress.org/plugins/transact/
  */
 
 /**

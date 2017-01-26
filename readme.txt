@@ -54,6 +54,10 @@ We are cheaper than any credit card service for small amounts.
 
 == Changelog ==
 
+= 1.1.0 =
+* Update styling. Button size and fade linear-gradient
+* Update File headers
+
 = 1.0 =
 * Initial public release
 
