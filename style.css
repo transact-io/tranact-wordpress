@@ -15,10 +15,10 @@
 
 .transact_purchase_button.fade {
   margin-bottom: 1.25rem;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 1) 65%, rgba(255, 255, 255, 1));
-  height: 115px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 68%, rgba(255, 255, 255, 1));
+  height: 150px;
   position: relative;
-  margin-top: -90px;
+  margin-top: -125px;
   z-index: 1;
 }
 

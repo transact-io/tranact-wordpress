@@ -128,15 +128,24 @@ class AdminSettingsMenuExtension
             'transact-settings',
             'xct_button_style', // Section,
             array('text_color') // Default value
-        );      
+        );
 
         add_settings_field(
             'background_color', 
-            'Background Color', 
+            'Button Background Color', 
             array( $this, 'color_input_callback' ), 
             'transact-settings', 
             'xct_button_style',
-            array('background_color', '#308030') // Default value
+            array('background_color', '#19a5ae') // Default value
+        );
+
+        add_settings_field(
+            'page_background_color', 
+            'Page Fade Color', 
+            array( $this, 'color_input_callback' ), 
+            'transact-settings', 
+            'xct_button_style',
+            array('page_background_color') // Default value
         );
 
     }
@@ -220,13 +229,13 @@ class AdminSettingsMenuExtension
     /** 
      * Get the settings option array and print one of its values
      */
-    public function color_input_callback($field, $default_color = NULL)
+    public function color_input_callback($args)
     {
-        $field = current($field);
-        if(is_null($default_color)) {
+        $field = $args[0];
+        if(!isset($args[1])) {
             $default_color = '#ffffff';
         } else {
-            $default_color = current($default_color);
+            $default_color = $args[1];
         }
         $options = get_option('transact-settings');
 
