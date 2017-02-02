@@ -344,19 +344,58 @@ class AdminSettingsMenuExtension
      * We check if the credentials are good, in that case we set a flag to know it in the future
      * In case they are wrong, we set the flag to false and show a message to the publisher
      *
+     * We check if subscription is activated on transact.io
+     * If is not, we unset from our options and tell to the user.
+     *
      */
     public function hook_post_settings_and_validates()
     {
         if (isset($_POST['option_page']) && ($_POST['option_page'] == 'transact-settings'))
         {
             $_POST['transact-settings'] = filter_var_array($_POST['transact-settings'], FILTER_SANITIZE_STRING);
-            $validate_url = (new ConfigParser())->getValidationUrl();
-            $response = (new TransactApi())->validates($validate_url, $_POST['transact-settings']['account_id'], $_POST['transact-settings']['secret_key']);
-            if ($response) {
-                set_transient( SETTING_VALIDATION_TRANSIENT, 1, 0);
-            } else {
-                set_transient( SETTING_VALIDATION_TRANSIENT, 0, 0);
+            if ($this->settings_user_validates($_POST['transact-settings'])) {
+                $this->settings_subscription_validates($_POST['transact-settings']);
             }
+        }
+    }
+
+    /**
+     * Authenticate publisher against transact and set transient depends on result
+     *
+     * @param $post_options
+     * @return bool
+     */
+    protected function settings_user_validates($post_options)
+    {
+        $validate_url = (new ConfigParser())->getValidationUrl();
+        $response = (new TransactApi())->validates($validate_url, $post_options['account_id'], $post_options['secret_key']);
+        if ($response) {
+            set_transient( SETTING_VALIDATION_TRANSIENT, 1, 0);
+        } else {
+            set_transient( SETTING_VALIDATION_TRANSIENT, 0, 0);
+        }
+        return $response;
+    }
+
+    /**
+     * Authenticate publisher subscription against transact, if failure, set subscription to 0 and set transient depends on result
+     *
+     * @param $post_options
+     * @return bool
+     */
+    protected function settings_subscription_validates(&$post_options)
+    {
+        if (isset($post_options['subscription']) && ($post_options['subscription']))
+        {
+            $validate_url = (new ConfigParser())->getValidationSubscriptionUrl();
+            $response = (new TransactApi())->subscriptionValidates($validate_url, $post_options['account_id']);
+            if ($response) {
+                set_transient( SETTING_VALIDATION_SUBSCRIPTION_TRANSIENT, 1, 0);
+            } else {
+                set_transient( SETTING_VALIDATION_SUBSCRIPTION_TRANSIENT, 0, 0);
+                $post_options['subscription'] = 0;
+            }
+            return $response;
         }
     }
 

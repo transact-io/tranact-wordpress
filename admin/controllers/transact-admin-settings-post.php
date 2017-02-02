@@ -20,6 +20,14 @@ class AdminSettingsPostExtension
     const BUTTON_TEXT_DEFAULT = 'Purchase on Transact.io';
 
     /**
+     * Keys for buttons options, by default PURCHASE_AND_SUBSCRIPTION
+     */
+    const PURCHASE_AND_SUBSCRIPTION = 1;
+    const ONLY_PURCHASE = 2;
+    const ONLY_SUBSCRIBE = 3;
+
+
+    /**
      * All hooks to dashboard
      */
     public function hookToDashboard()
@@ -121,6 +129,9 @@ class AdminSettingsPostExtension
         $content = htmlspecialchars( $_POST['transact_premium_content'] );
         update_post_meta( $post_id, 'transact_premium_content', $content );
 
+        $display_button = sanitize_text_field( $_POST['transact_display_button'] );
+        update_post_meta( $post_id, 'transact_display_button', $display_button );
+
         /**
          *
          *  todo: comments premium future development
@@ -153,6 +164,7 @@ class AdminSettingsPostExtension
         $value[1] = get_post_meta( $post->ID, 'transact_price', true );
         $value[2] = get_post_meta( $post->ID, 'transact_item_code', true );
         $value[3] = get_post_meta( $post->ID, 'transact_premium_content' , true ) ;
+        $value[4] = get_post_meta( $post->ID, 'transact_display_button' , true ) ;
 
         /**
          *  todo: comments premium future development
@@ -193,7 +205,7 @@ class AdminSettingsPostExtension
         </script>
         **/
         ?>
-        <br/>
+        <br xmlns="http://www.w3.org/1999/html"/>
         <label for="transact_price">
             <?php _e( 'Premium Price', 'transact' ); ?>
         </label>
@@ -204,6 +216,34 @@ class AdminSettingsPostExtension
         </label>
         <input readonly type="text" size="35" id="transact_item_code" name="transact_item_code" value="<?php echo esc_attr( $value[2] ); ?>" />
         <br/>
+        <?php
+        /**
+         * Check if subscription is enable by the publisher to show button options
+         */
+        $options = get_option('transact-settings');
+        $subscription_options = isset($options['subscription']) ? $options['subscription'] : 0;
+        if ($subscription_options) {
+            $selected_purchased_and_subscription = ($value[4] == self::PURCHASE_AND_SUBSCRIPTION) ? 'selected' : '';
+            $selected_purchased = ($value[4] == self::ONLY_PURCHASE) ? 'selected' : '';
+            $selected_subscription = ($value[4] == self::ONLY_SUBSCRIBE) ? 'selected' : '';
+            ?>
+            <label for="transact_display_button">
+                <?php _e( 'Display Button', 'transact' ); ?>
+            </label>
+            <select id="transact_display_button" name="transact_display_button">
+                <option <?php echo $selected_purchased_and_subscription;?> value="<?php echo self::PURCHASE_AND_SUBSCRIPTION;?>">
+                    <?php _e('Display Purchase and Subscribe Button', 'transact');?>
+                </option>
+                <option <?php echo $selected_purchased;?> value="<?php echo self::ONLY_PURCHASE;?>">
+                    <?php _e('Display Only Purchase Button', 'transact');?>
+                </option>
+                <option <?php echo $selected_subscription;?> value="<?php echo self::ONLY_SUBSCRIBE;?>">
+                    <?php _e('Display Only Subscribe Button', 'transact');?>
+                </option>
+            </select>
+            <?php
+        }
+        ?>
         <?php
         /**
          *  todo: comments premium future development
