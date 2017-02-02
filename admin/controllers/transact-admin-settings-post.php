@@ -163,8 +163,8 @@ class AdminSettingsPostExtension
         // Use get_post_meta to retrieve an existing value from the database.
         $value[1] = get_post_meta( $post->ID, 'transact_price', true );
         $value[2] = get_post_meta( $post->ID, 'transact_item_code', true );
-        $value[3] = get_post_meta( $post->ID, 'transact_premium_content' , true ) ;
-        $value[4] = get_post_meta( $post->ID, 'transact_display_button' , true ) ;
+        $value[3] = get_post_meta( $post->ID, 'transact_premium_content' , true );
+        $value[4] = get_post_meta( $post->ID, 'transact_display_button' , true );
 
         /**
          *  todo: comments premium future development
