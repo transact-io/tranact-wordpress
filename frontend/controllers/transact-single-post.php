@@ -47,6 +47,7 @@ class FrontEndPostExtension
         $this->config = new ConfigParser();
         add_filter( 'the_content', array($this, 'filter_pre_get_content' ), 999);
         add_action( 'wp_enqueue_scripts', array($this, 'load_js_xsact_library'));
+        add_action( 'wp_enqueue_scripts', array($this, 'load_css_xsact_library'));
 
         /**
          * Registering Ajax Calls on single post
@@ -144,7 +145,22 @@ class FrontEndPostExtension
          */
         wp_register_script( 'transact_callback',  FRONTEND_ASSETS_URL . 'transact_post.js', array('jquery') );
         wp_localize_script( 'transact_callback', 'url', $url );
-        wp_enqueue_script(  'transact_callback' );
+        wp_enqueue_script( 'transact_callback' );
+    }
+
+    /**
+     * Loading Transact css Library
+     */
+    public function load_css_xsact_library()
+    {
+        if (!$this->check_scope()) {
+            return;
+        }
+
+        /**
+         * Loading external library (JS API)
+         */
+        wp_enqueue_style('xsact', FRONTEND_ASSETS_URL . 'style.css');
     }
 
     /**
