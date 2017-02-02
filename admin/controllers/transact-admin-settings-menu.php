@@ -91,6 +91,26 @@ class AdminSettingsMenuExtension
         );
 
         /*
+         * Subscriptions Manager
+         */
+        add_settings_section(
+            'subscriptions',
+            __( 'Manage Subscriptions', 'transact' ),
+            function() { _e('Click on the checkbox to activate subscriptions on your site. They must be activated on transact.io','transact'); },
+            'transact-settings'
+        );
+
+        // Adding Account ID field
+        add_settings_field(
+            'enable_subscriptions',
+            __( 'Enable Subscriptions', 'transact' ),
+            array($this, 'subscriptions_callback'),
+            'transact-settings',
+            'subscriptions',
+            array('subscriptions')
+        );
+
+        /*
          * Post Types Manager
          */
         // API Transact Settings
@@ -150,6 +170,35 @@ class AdminSettingsMenuExtension
 
     }
 
+    public function subscriptions_callback($arg) {
+        $options = get_option('transact-settings');
+        $subscription_options = isset($options['subscription']) ? $options['subscription'] : 0;
+
+        $subscription_selected = ($subscription_options) ? 'checked' : '';
+        $checkbox_value = ($subscription_options) ? 1 : 0;
+
+        ?>
+            <script>
+                // Handles checkbox for subscription
+                function setValue(id) {
+                    if( jQuery(id).is(':checked')) {
+                        jQuery(id).val(1);
+                    } else {
+                        jQuery(id).val(0);
+                    }
+                }
+            </script>
+
+            <input <?php echo $subscription_selected; ?>
+                id="subscription"
+                type="checkbox"
+                onclick="setValue(subscription)"
+                name="transact-settings[subscription]"
+                value="<?php echo $checkbox_value; ?>"
+            />
+        <?php
+    }
+
     /**
      * CPT Settings callback
      * It will show all visible cpt and make the user select the ones they want transact on.
@@ -179,16 +228,6 @@ class AdminSettingsMenuExtension
             $options = get_option('transact-settings');
             $cpt_options = isset($options['cpt']) ? $options['cpt'] : array();
             ?>
-            <script>
-                // Handles checkbox for cpt
-                function setValue(id) {
-                    if( jQuery(id).is(':checked')) {
-                        jQuery(id).val(1);
-                    } else {
-                        jQuery(id).val(0);
-                    }
-                }
-            </script>
             <table>
                 <tr>
                     <?php foreach ($public_post_types as $key => $cpt): ?>
