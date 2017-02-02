@@ -101,7 +101,7 @@ class FrontEndPostExtension
         } else {
             global $post;
             if (!has_shortcode($post->post_content, 'transact_button')) {
-                $content = $this->print_buttons($options, $content, $transact_api);
+                $content = $content . $this->print_buttons($options, $transact_api);
             }
             return $content;
         }
@@ -110,32 +110,33 @@ class FrontEndPostExtension
     /**
      * Will check if the user have a subscription and which kind of button want to use (given on post settings)
      *
-     * @param $content
+     * @param $options
      * @param $transact_api
      * @return string
      */
-    public function print_buttons($options, $content, $transact_api)
+    public function print_buttons($options, $transact_api)
     {
         $type_of_button = get_post_meta( $this->post_id, 'transact_display_button' , true );
         switch($type_of_button) {
             case (self::PURCHASE_AND_SUBSCRIPTION):
-                return $this->print_purchase_and_subscription($options, $content, $transact_api);
+                return $this->print_purchase_and_subscription($options, $transact_api);
                 break;
             case (self::ONLY_PURCHASE):
-                return $this->print_single_button($options, $content, $transact_api, $type_of_button);
+                return $this->print_single_button($options, $transact_api, $type_of_button);
                 break;
             case (self::ONLY_SUBSCRIBE):
-                return $this->print_single_button($options, $content, $transact_api, $type_of_button);
+                return $this->print_single_button($options, $transact_api, $type_of_button);
                 break;
             default:
-                return $this->print_single_button($options, $content, $transact_api, self::ONLY_PURCHASE);
+                return $this->print_single_button($options, $transact_api, self::ONLY_PURCHASE);
+                break;
         }
     }
 
-    public function print_purchase_and_subscription($options, $content, $transact_api)
+    public function print_purchase_and_subscription($options, $transact_api)
     {
-        $content = $this->print_single_button($options, $content, $transact_api, self::ONLY_SUBSCRIBE);
-        $content .= $this->print_single_button($options, $content, $transact_api, self::ONLY_SUBSCRIBE);
+        $content = $this->print_single_button($options, $transact_api, self::ONLY_PURCHASE);
+        $content .= $this->print_single_button($options, $transact_api, self::ONLY_SUBSCRIBE);
         //var_dump($content);die;
 
         return $content;
@@ -145,12 +146,11 @@ class FrontEndPostExtension
      * It prints a single button, either subscription or purchase
      *
      * @param $options
-     * @param $content
      * @param $transact_api
      * @param $type_of_button type of button to print subscription or purchase
      * @return string
      */
-    public function print_single_button($options, $content, $transact_api, $type_of_button)
+    public function print_single_button($options, $transact_api, $type_of_button)
     {
         if ($type_of_button == self::ONLY_PURCHASE) {
             $price = $transact_api->get_price();
@@ -179,7 +179,7 @@ class FrontEndPostExtension
             $button_text .
             '</button>
                     </div>';
-        return $content . $button;
+        return $button;
     }
 
     /**
