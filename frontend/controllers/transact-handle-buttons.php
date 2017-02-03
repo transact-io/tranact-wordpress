@@ -50,7 +50,7 @@ class transactHandleButtons
      */
     public function print_buttons()
     {
-        $button_type = get_post_meta( $this->post_id, 'transact_display_button' , true );
+        $button_type = $this->get_button_type();
         switch($button_type) {
             case (self::PURCHASE_AND_SUBSCRIPTION):
                 return $this->print_purchase_and_subscription($this->options, $this->transact_api);
@@ -65,6 +65,16 @@ class transactHandleButtons
                 return $this->print_single_button($this->options, $this->transact_api, self::ONLY_PURCHASE);
                 break;
         }
+    }
+
+    /**
+     * Get button type from post options
+     *
+     * @return mixed
+     */
+    public function get_button_type()
+    {
+        return get_post_meta( $this->post_id, 'transact_display_button' , true );
     }
 
     /**
@@ -100,7 +110,7 @@ class transactHandleButtons
             list($r, $g, $b) = sscanf($options['page_background_color'], "#%02x%02x%02x");
             $background_fade_color_style = "background:linear-gradient(to bottom, rgba($r,$g,$b,0), rgba($r,$g,$b,1) 68%, rgba($r,$g,$b,1))";
         }
-        $onclick = 'transactApi.autho rize(PurchasePopUpClosed)';
+        $onclick = 'transactApi.authorize(PurchasePopUpClosed)';
 
         $button = sprintf(
             '<div class="transact_purchase_button fade" style="%s"><button style="%s" id="button_purchase" onclick="%s">%s</button></div>',
@@ -118,7 +128,7 @@ class transactHandleButtons
      * @param $button_type
      * @return string|void
      */
-    private function get_button_text($button_type)
+    protected function get_button_text($button_type)
     {
         if ($button_type == self::ONLY_PURCHASE) {
             $price = $this->transact_api->get_price();
