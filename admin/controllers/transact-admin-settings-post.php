@@ -4,6 +4,9 @@ namespace Transact\Admin\Settings\Post;
 use Transact\Utils\Settings\cpt\SettingsCpt;
 require_once  plugin_dir_path(__FILE__) . '../../utils/transact-settings-cpt.php';
 
+use Transact\Admin\Settings\Shortcode\transactShortcode;
+require_once  plugin_dir_path(__FILE__) . 'transact-shortcode.php';
+
 /**
  * Class AdminSettingsPostExtension
  */
@@ -13,11 +16,6 @@ class AdminSettingsPostExtension
      * @var Saves the post_id we are handling
      */
     protected $post_id;
-
-    /**
-     * text to be included on the button
-     */
-    const BUTTON_TEXT_DEFAULT = 'Purchase on Transact.io';
 
     /**
      * Keys for buttons options, by default PURCHASE_AND_SUBSCRIPTION
@@ -285,20 +283,8 @@ class AdminSettingsPostExtension
      */
     public function transact_shortcode( $atts )
     {
-        $options = get_option( 'transact-settings' );
-
-        $button = '<button id="{{button_id}}" style="' . 
-            (isset($options['background_color']) ? 'background-color:' . esc_attr($options['background_color']) . ';' : '') . 
-            (isset($options['text_color']) ? 'color:' . esc_attr($options['text_color']) . ';' : '') . 
-            '" class="transact_purchase_button" onclick="transactApi.authorize(PurchasePopUpClosed);">{{button_text}}</button>';
-
-        $a = shortcode_atts( array(
-            'id'   => 'button_purchase',
-            'text' => __(self::BUTTON_TEXT_DEFAULT, 'transact'),
-        ), $atts );
-
-        $button = str_replace(array('{{button_id}}', '{{button_text}}'), array($a['id'], $a['text']), $button);
-        return $button;
+        $shortcode = new transactShortcode($atts);
+        return $shortcode->print_shortcode();
     }
 
 }
