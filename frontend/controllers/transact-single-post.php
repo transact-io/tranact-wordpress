@@ -23,21 +23,6 @@ require_once  plugin_dir_path(__FILE__) . 'transact-handle-buttons.php';
 class FrontEndPostExtension
 {
     /**
-     * text to be included on the button
-     */
-    const BUTTON_TEXT = 'Purchase with Transact for';
-    const TOKENS_TEXT = 'tokens';
-    const TOKEN_TEXT = 'token';
-    const SUBSCRIBE_TEXT = 'Subscribe';
-
-    /**
-     * Keys for buttons options, by default PURCHASE_AND_SUBSCRIPTION
-     */
-    const PURCHASE_AND_SUBSCRIPTION = 1;
-    const ONLY_PURCHASE = 2;
-    const ONLY_SUBSCRIBE = 3;
-
-    /**
      * config controller
      * @var
      */
