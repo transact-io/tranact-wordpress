@@ -13,6 +13,9 @@ require_once  plugin_dir_path(__FILE__) . '../../models/transact-transactions-ta
 use Transact\Utils\Settings\cpt\SettingsCpt;
 require_once  plugin_dir_path(__FILE__) . '../../utils/transact-settings-cpt.php';
 
+use Transact\FrontEnd\Controllers\Buttons\transactHandleButtons;
+require_once  plugin_dir_path(__FILE__) . 'transact-handle-buttons.php';
+
 
 /**
  * Class FrontEndPostExtension
@@ -101,85 +104,11 @@ class FrontEndPostExtension
         } else {
             global $post;
             if (!has_shortcode($post->post_content, 'transact_button')) {
-                $content = $content . $this->print_buttons($options, $transact_api);
+                $button_controller = new transactHandleButtons($this->post_id, $transact_api);
+                $content = $content . $button_controller->print_buttons();
             }
             return $content;
         }
-    }
-
-    /**
-     * Will check if the user have a subscription and which kind of button want to use (given on post settings)
-     *
-     * @param $options
-     * @param $transact_api
-     * @return string
-     */
-    public function print_buttons($options, $transact_api)
-    {
-        $type_of_button = get_post_meta( $this->post_id, 'transact_display_button' , true );
-        switch($type_of_button) {
-            case (self::PURCHASE_AND_SUBSCRIPTION):
-                return $this->print_purchase_and_subscription($options, $transact_api);
-                break;
-            case (self::ONLY_PURCHASE):
-                return $this->print_single_button($options, $transact_api, $type_of_button);
-                break;
-            case (self::ONLY_SUBSCRIBE):
-                return $this->print_single_button($options, $transact_api, $type_of_button);
-                break;
-            default:
-                return $this->print_single_button($options, $transact_api, self::ONLY_PURCHASE);
-                break;
-        }
-    }
-
-    public function print_purchase_and_subscription($options, $transact_api)
-    {
-        $content = $this->print_single_button($options, $transact_api, self::ONLY_PURCHASE);
-        $content .= $this->print_single_button($options, $transact_api, self::ONLY_SUBSCRIBE);
-        //var_dump($content);die;
-
-        return $content;
-    }
-
-    /**
-     * It prints a single button, either subscription or purchase
-     *
-     * @param $options
-     * @param $transact_api
-     * @param $type_of_button type of button to print subscription or purchase
-     * @return string
-     */
-    public function print_single_button($options, $transact_api, $type_of_button)
-    {
-        if ($type_of_button == self::ONLY_PURCHASE) {
-            $price = $transact_api->get_price();
-            if ($price == 1) {
-                $token_text = __(self::TOKEN_TEXT, 'transact');
-            } else {
-                $token_text = __(self::TOKENS_TEXT, 'transact');
-            }
-            $button_text = __(self::BUTTON_TEXT, 'transact') . ' '.  $price . ' ' . $token_text;
-        } else {
-            $button_text = __(self::SUBSCRIBE_TEXT, 'transact');
-        }
-
-        $button_background_color_style = (isset($options['background_color']) ? 'background-color:' . esc_attr($options['background_color']) . ';' : '');
-        $button_text_color_style = (isset($options['text_color']) ? 'color:' . esc_attr($options['text_color']) . ';' : '');
-        $background_fade_color_style = '';
-        if(isset($options['page_background_color'])) {
-            list($r, $g, $b) = sscanf($options['page_background_color'], "#%02x%02x%02x");
-            $background_fade_color_style = "background:linear-gradient(to bottom, rgba($r,$g,$b,0), rgba($r,$g,$b,1) 68%, rgba($r,$g,$b,1))";
-        }
-
-        $button = '<div class="transact_purchase_button fade" style="' .
-            $background_fade_color_style . '">' .
-            '<button style="' . $button_background_color_style . $button_text_color_style .
-            '" id="button_purchase" onclick="transactApi.authorize(PurchasePopUpClosed);">' .
-            $button_text .
-            '</button>
-                    </div>';
-        return $button;
     }
 
     /**
