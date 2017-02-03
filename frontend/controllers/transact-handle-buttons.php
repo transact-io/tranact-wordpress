@@ -89,7 +89,7 @@ class transactHandleButtons
      *
      * @param $options
      * @param $transact_api
-     * @param $button_type type of button to print subscription or purchase
+     * @param $button_type button type to print subscription or purchase
      * @return string html button
      */
     protected function print_single_button($options, $transact_api, $button_type)
@@ -103,14 +103,23 @@ class transactHandleButtons
             list($r, $g, $b) = sscanf($options['page_background_color'], "#%02x%02x%02x");
             $background_fade_color_style = "background:linear-gradient(to bottom, rgba($r,$g,$b,0), rgba($r,$g,$b,1) 68%, rgba($r,$g,$b,1))";
         }
+        $onclick = 'transactApi.authorize(PurchasePopUpClosed)';
 
-        $button = '<div class="transact_purchase_button fade" style="' .
+        $button = printf(
+            '<div class="transact_purchase_button fade" style="%s"><button style="%s" id="button_purchase" onclick="%s">%s</button></div>',
+            $background_fade_color_style,
+            $button_background_color_style . $button_text_color_style,
+            $onclick,
+            $button_text
+        );
+
+        /**$button = '<div class="transact_purchase_button fade" style="' .
             $background_fade_color_style . '">' .
             '<button style="' . $button_background_color_style . $button_text_color_style .
             '" id="button_purchase" onclick="transactApi.authorize(PurchasePopUpClosed);">' .
             $button_text .
             '</button>
-                    </div>';
+                    </div>';**/
 
         return $button;
     }
