@@ -89,22 +89,12 @@ class transactHandleButtons
      *
      * @param $options
      * @param $transact_api
-     * @param $type_of_button type of button to print subscription or purchase
-     * @return string
+     * @param $button_type type of button to print subscription or purchase
+     * @return string html button
      */
-    protected function print_single_button($options, $transact_api, $type_of_button)
+    protected function print_single_button($options, $transact_api, $button_type)
     {
-        if ($type_of_button == self::ONLY_PURCHASE) {
-            $price = $transact_api->get_price();
-            if ($price == 1) {
-                $token_text = __(self::TOKEN_TEXT, 'transact');
-            } else {
-                $token_text = __(self::TOKENS_TEXT, 'transact');
-            }
-            $button_text = __(self::BUTTON_TEXT, 'transact') . ' '.  $price . ' ' . $token_text;
-        } else {
-            $button_text = __(self::SUBSCRIBE_TEXT, 'transact');
-        }
+        $button_text = $this->get_button_text($button_type);
 
         $button_background_color_style = (isset($options['background_color']) ? 'background-color:' . esc_attr($options['background_color']) . ';' : '');
         $button_text_color_style = (isset($options['text_color']) ? 'color:' . esc_attr($options['text_color']) . ';' : '');
@@ -121,7 +111,29 @@ class transactHandleButtons
             $button_text .
             '</button>
                     </div>';
+
         return $button;
+    }
+
+    /**
+     * Getting button text depending button type
+     * @param $button_type
+     * @return string|void
+     */
+    private function get_button_text($button_type)
+    {
+        if ($button_type == self::ONLY_PURCHASE) {
+            $price = $this->transact_api->get_price();
+            if ($price == 1) {
+                $token_text = __(self::TOKEN_TEXT, 'transact');
+            } else {
+                $token_text = __(self::TOKENS_TEXT, 'transact');
+            }
+            $button_text = __(self::BUTTON_TEXT, 'transact') . ' '.  $price . ' ' . $token_text;
+        } else {
+            $button_text = __(self::SUBSCRIBE_TEXT, 'transact');
+        }
+        return $button_text;
     }
 
 }
