@@ -283,7 +283,8 @@ class AdminSettingsPostExtension
      */
     public function transact_shortcode( $atts )
     {
-        $shortcode = new transactShortcode($atts, $this->post_id);
+        global $post;
+        $shortcode = new transactShortcode($atts, $post->ID);
         return $shortcode->print_shortcode();
     }
 

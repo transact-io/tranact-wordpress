@@ -131,7 +131,7 @@ class transactHandleButtons
     protected function get_button_text($button_type)
     {
         if ($button_type == self::ONLY_PURCHASE) {
-            $price = $this->transact_api->get_price();
+            $price = get_post_meta($this->post_id, 'transact_price', true );
             if ($price == 1) {
                 $token_text = __(self::TOKEN_TEXT, 'transact');
             } else {
