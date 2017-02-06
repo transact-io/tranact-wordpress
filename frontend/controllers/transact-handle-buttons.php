@@ -110,12 +110,15 @@ class transactHandleButtons
             list($r, $g, $b) = sscanf($options['page_background_color'], "#%02x%02x%02x");
             $background_fade_color_style = "background:linear-gradient(to bottom, rgba($r,$g,$b,0), rgba($r,$g,$b,1) 68%, rgba($r,$g,$b,1))";
         }
-        $onclick = 'transactApi.authorize(PurchasePopUpClosed)';
+
+        $onclick = ($button_type == self::ONLY_PURCHASE) ? 'doPurchase()' : 'doSubscription()';
+        $extra_id = ($button_type == self::ONLY_PURCHASE) ? 'purchase' : 'subscription';
 
         $button = sprintf(
-            '<div class="transact_purchase_button fade" style="%s"><button style="%s" id="button_purchase" onclick="%s">%s</button></div>',
+            '<div class="transact_purchase_button fade" style="%s"><button style="%s" id="button_purchase %s" onclick="%s">%s</button></div>',
             $background_fade_color_style,
             $button_background_color_style . $button_text_color_style,
+            $extra_id,
             $onclick,
             $button_text
         );

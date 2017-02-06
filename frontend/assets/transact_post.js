@@ -1,46 +1,59 @@
 var package = {};
 
+var purchase_token = {}; // token used for buying single item
+var subscribe_token = {}; // subscription
 
 jQuery(function() {
-
     var ajax_url = url.ajaxurl;
 
     jQuery.getJSON(ajax_url, { 'action' : 'get_token', 'post_id' : url.post_id })
         .success(function(data) {
             console.log('got token: '+ data.token);
-            transactApi.setToken(data.token);
+            purchase_token = data.token;
+            //transactApi.setToken(data.token);
         })
         .fail(function(data) {
             console.log('Failed to get Transact token');
         });
 
-
-
-
+    // If subscription button is on the site, get subscription token too
+    if(document.getElementById('button_purchase subscription')) {
+        jQuery.getJSON(ajax_url, { 'action' : 'get_subscription_token', 'post_id' : url.post_id })
+            .success(function(data) {
+                console.log('got subscribe_token: '+ data.token);
+                subscribe_token = data.token;
+                //transactApi.setToken(data.token);
+            })
+            .fail(function(data) {
+                console.log('Failed to get Transact token');
+            });
+    }
 });
 
-
-function getCookie(cname) {
-    var name = cname + "=";
-    var ca = document.cookie.split(';');
-    for(var i = 0; i < ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) == ' ') {
-            c = c.substring(1);
-        }
-        if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length);
-        }
-    }
-    return "";
+/**
+ * onclick for purchase button
+ * Will set up purchase token on transact
+ * and get the callback
+ */
+function doPurchase() {
+    console.log('doPurchase');
+    transactApi.setToken(purchase_token);
+    // Call authorize() which will load the popup,
+    // passing in callback function (PurchasePopUpClosed)
+    transactApi.authorize(PurchasePopUpClosed);
 }
 
-
-function setCookie(cname, cvalue, exdays) {
-    var d = new Date();
-    d.setTime(d.getTime() + (exdays*24*60*60*1000));
-    var expires = "expires="+d.toUTCString();
-    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+/**
+ * onclick for purchase button
+ * Will set up subscription token on transact
+ * and get the callback
+ */
+function doSubscription() {
+    console.log('doSubscription');
+    transactApi.setToken(subscribe_token);
+    // Call authorize() which will load the popup,
+    // passing in callback function (PurchasePopUpClosed)
+    transactApi.authorize(PurchasePopUpClosed);
 }
 
 function PurchasePopUpClosed(popup, event) {
@@ -90,4 +103,26 @@ function PurchasePopUpClosed(popup, event) {
                 console.log( "finished" );
             });
     }
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires="+d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 }

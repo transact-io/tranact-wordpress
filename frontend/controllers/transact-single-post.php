@@ -46,10 +46,16 @@ class FrontEndPostExtension
         add_action( 'wp_enqueue_scripts', array($this, 'load_css_xsact_library'));
 
         /**
-         * Registering Ajax Calls on single post
+         * Registering Ajax Calls on single post (Purchase Token)
          */
         add_action( 'wp_ajax_nopriv_get_token', array($this, 'request_token_callback' ));
         add_action( 'wp_ajax_get_token',        array($this, 'request_token_callback' ));
+
+        /**
+         * Registering Ajax Calls on single post (Subscription Token)
+         */
+        add_action( 'wp_ajax_nopriv_get_subscription_token', array($this, 'request_subscription_token_callback' ));
+        add_action( 'wp_ajax_get_subscription_token',        array($this, 'request_subscription_token_callback' ));
 
         /**
          * Registering callback when user buys the item
@@ -147,6 +153,19 @@ class FrontEndPostExtension
     {
         $transact = new TransactApi($_REQUEST['post_id']);
         $token = $transact->get_token();
+        header('Content-Type: text/javascript; charset=utf8');
+        echo $token;
+        exit;
+    }
+
+    /**
+     * admin-ajax.php?action=get_subscription_token
+     * get_subscription_token ajax call handler to get and set subscription Token from Transact (onload)
+     */
+    public function request_subscription_token_callback()
+    {
+        $transact = new TransactApi($_REQUEST['post_id']);
+        $token = $transact->get_subscription_token();
         header('Content-Type: text/javascript; charset=utf8');
         echo $token;
         exit;
