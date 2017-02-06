@@ -1,0 +1,75 @@
+<html>
+  <head>
+<!--
+    <script src="http://localhost:5555/assets/js/transact.js"></script>
+-->
+
+    <script src="https://frontend-dot-xsact-1304.appspot.com/assets/js/transact.js"></script>
+
+
+    <!-- NOTE transact.js does NOT require jquery,
+    just using jQuery here just to facilitate demo -->
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <title>Transact.io  demo page</title>
+
+  </head>
+  <body>
+    <h1>Test API v1</h1>
+
+    <button onclick="transactApi.authorize(PurchasePopUpClosed);">Purchase on Xsact</button>
+    <br>
+    <p>
+    <div id='paid_content'>
+      <span style="color:red">
+        Paid content here after puchase
+      </span>
+    </div>
+
+  <script>
+    var package = {};
+
+    // for transact.io devs  local testing enable this.
+    $( document ).ready(function() {
+      // afer JS loaded, change URL
+      //transactApi.setFrontendUrl('http://localhost:5555/purchase');
+    });
+
+    $.getJSON("demo-api.php", { 'action' : 'getToken' })
+      .done(function(data) {
+        transactApi.setToken(data.token);
+
+      })
+      .fail(function(resp_data) {
+          console.log('Error Response data:', resp_data);
+          alert('failed to get sessionId');
+      })
+
+    function PurchasePopUpClosed(popup, event) {
+      console.log('PurchasePopUpClosed');
+      console.log(popup);
+
+      if (event && event.data) {
+        console.log(event.data);
+        var validation_data = event.data;
+        validation_data.action = 'getPurchasedContent';
+
+        var jqxhr = $.getJSON("demo-api.php", validation_data)
+        .done(function(resp_data) {
+          console.log('Success Response data:', resp_data);
+          $('#paid_content').html(resp_data.content);
+        })
+        .fail(function(resp_data) {
+          console.log('Error Response data:', resp_data);
+          $('#paid_content').html('purchase failed');
+        })
+        .always(function() {
+          console.log( "finished" );
+        });
+
+      }
+    }
+
+  </script>
+
+  </body>
+</html>
