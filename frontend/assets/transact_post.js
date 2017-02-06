@@ -73,27 +73,8 @@ function PurchasePopUpClosed(popup, event) {
         var jqxhr = jQuery.getJSON(ajax_url, validation_data)
             .done(function(resp_data) {
                 console.log('Success Response data:', resp_data);
-
-                // Set or Update Cookie
-                var cookie = getCookie('wp_transact_');
-                if (cookie != '') {
-                    cookie_array = JSON.parse(cookie);
-                    var new_cookie = {};
-                    new_cookie['id']  = validation_data.post_id;
-                    new_cookie['uid'] = resp_data.decoded.uid;
-                    cookie_array.push(new_cookie);
-
-                    setCookie('wp_transact_', JSON.stringify(cookie_array), 365);
-
-                } else {
-                    var new_cookie = {};
-                    new_cookie['id']  = validation_data.post_id;
-                    new_cookie['uid'] = resp_data.decoded.uid;
-                    var cookies = [];
-                    cookies.push(new_cookie);
-
-                    setCookie('wp_transact_', JSON.stringify(cookies), 365);
-                }
+                // Handles cookie
+                handleCookies(validation_data, resp_data);
                 // Reload
                 location.reload();
             })
@@ -104,6 +85,59 @@ function PurchasePopUpClosed(popup, event) {
             .always(function() {
                 console.log( "finished" );
             });
+    }
+}
+
+function handleCookies(validation_data, resp_data)
+{
+    console.log(resp_data.decoded, null, 4);
+    // Set or Update Cookie
+    if (resp_data.subscription == '1') {
+        handleSubscriptionCookies(resp_data);
+    } else {
+        handlePurchaseCookies(validation_data, resp_data);
+    }
+}
+
+function handleSubscriptionCookies(resp_data)
+{
+    var cookie = getCookie('wp_subscription_transact_');
+    if (cookie != '') {
+        cookie_array = JSON.parse(cookie);
+        var new_cookie = {};
+        new_cookie['expiration']  = resp_data.decoded.sub_expires;
+        new_cookie['uid'] = resp_data.decoded.uid;
+        cookie_array.push(new_cookie);
+        setCookie('wp_subscription_transact_', JSON.stringify(cookie_array), 365);
+    } else {
+        var new_cookie = {};
+        new_cookie['expiration']  = resp_data.decoded.sub_expires;
+        new_cookie['uid'] = resp_data.decoded.uid;
+        var cookies = [];
+        cookies.push(new_cookie);
+        setCookie('wp_subscription_transact_', JSON.stringify(cookies), 365);
+    }
+}
+
+function handlePurchaseCookies(validation_data, resp_data)
+{
+    var cookie = getCookie('wp_transact_');
+    if (cookie != '') {
+        cookie_array = JSON.parse(cookie);
+        var new_cookie = {};
+        new_cookie['id']  = validation_data.post_id;
+        new_cookie['uid'] = resp_data.decoded.uid;
+        cookie_array.push(new_cookie);
+        setCookie('wp_transact_', JSON.stringify(cookie_array), 365);
+
+    } else {
+        var new_cookie = {};
+        new_cookie['id']  = validation_data.post_id;
+        new_cookie['uid'] = resp_data.decoded.uid;
+        var cookies = [];
+        cookies.push(new_cookie);
+
+        setCookie('wp_transact_', JSON.stringify(cookies), 365);
     }
 }
 

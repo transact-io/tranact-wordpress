@@ -175,7 +175,9 @@ class FrontEndPostExtension
     }
 
     /**
-     *
+     * Callback from purchase
+     * Check if it is subscription or a normal purchase
+     * Acts accordingly (record on DB)
      */
     public function purchased_content_callback()
     {
@@ -184,16 +186,26 @@ class FrontEndPostExtension
         header('Content-Type: text/javascript; charset=utf8');
         try {
             $decoded = $transact->decode_token($_REQUEST['t']);
+            $subscription = 0;
 
             /**
-             * Creates a row on transaction table with purchase info
+             * If it is a subscription
              */
-            $tableModel = new transactTransactionsModel();
-            $tableModel->create_transaction($_REQUEST['post_id'], $decoded->uid, $decoded->iat);
-
+            if (isset($decoded->sub)) {
+                $tableModel = new transactSubscriptionTransactionsModel();
+                $tableModel->create_subscription($decoded->sub_expires, $decoded->uid, $decoded->iat);
+                $subscription = 1;
+            } else {
+                /**
+                 * Creates a row on transaction table with purchase info
+                 */
+                $tableModel = new transactTransactionsModel();
+                $tableModel->create_transaction($_REQUEST['post_id'], $decoded->uid, $decoded->iat);
+            }
                 echo json_encode(array(
                     'status' => 'OK',
-                    'decoded' => $decoded
+                    'decoded' => $decoded,
+                    'subscription' => $subscription
                 ));
 
         } catch (Exception $e) {
