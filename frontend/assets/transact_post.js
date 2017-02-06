@@ -5,7 +5,6 @@ var subscribe_token = {}; // subscription
 
 jQuery(function() {
     var ajax_url = url.ajaxurl;
-
     jQuery.getJSON(ajax_url, { 'action' : 'get_token', 'post_id' : url.post_id })
         .success(function(data) {
             console.log('got token: '+ data.token);
@@ -37,6 +36,7 @@ jQuery(function() {
  */
 function doPurchase() {
     console.log('doPurchase');
+    console.log('Setting Purchase token');
     transactApi.setToken(purchase_token);
     // Call authorize() which will load the popup,
     // passing in callback function (PurchasePopUpClosed)
@@ -50,6 +50,8 @@ function doPurchase() {
  */
 function doSubscription() {
     console.log('doSubscription');
+    console.log('Setting Subscription token');
+    console.log(subscribe_token);
     transactApi.setToken(subscribe_token);
     // Call authorize() which will load the popup,
     // passing in callback function (PurchasePopUpClosed)

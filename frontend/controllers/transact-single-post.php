@@ -7,6 +7,9 @@ require_once  plugin_dir_path(__FILE__) . 'transact-api.php';
 use Transact\Utils\Config\Parser\ConfigParser;
 require_once  plugin_dir_path(__FILE__) . '../../utils/transact-utils-config-parser.php';
 
+use Transact\Models\transactTransactionsTable\transactSubscriptionTransactionsModel;
+require_once  plugin_dir_path(__FILE__) . '../../models/transact-subscription-transactions-table.php';
+
 use Transact\Models\transactTransactionsTable\transactTransactionsModel;
 require_once  plugin_dir_path(__FILE__) . '../../models/transact-transactions-table.php';
 
