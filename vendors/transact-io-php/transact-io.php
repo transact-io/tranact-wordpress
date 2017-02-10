@@ -117,7 +117,6 @@ class TransactIoMsg {
 
     $this->token['iat'] = time();  // set timestamp
 
-    unset($this->token['item']);
     unset($this->token['price']);
     $this->token['sub'] = TRUE;
     $this->token['title'] = 'Subscription';

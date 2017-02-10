@@ -105,7 +105,29 @@ switch($_REQUEST['action']) {
     echo json_encode($response);
 
     break;
+  case 'getDonateToken':
+    $transact = InitSaleParameters($transact);
 
+    if (empty($_REQUEST['price'])) {
+      json_encode(new ErrorResponse('400', 'Invalid Price'));
+      return;
+    }
+    $transact->setPrice($_REQUEST['price']);
+    $transact->setTitle('Donation Title');
+
+    // Unique code for seller to set to what they want
+    //  This could be a code for the item your selling
+    $transact->setItem('Donate');
+
+    // Optional Unique ID of this sale
+    $transact->setUid('Donate_ID');
+
+    $response = array(
+      'token' => $transact->getToken()
+    );
+    echo json_encode($response);
+
+    break;
   case 'getPurchasedContent':
 
     try {
