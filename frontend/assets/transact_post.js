@@ -62,7 +62,7 @@ function PurchasePopUpClosed(popup, event) {
 
     var ajax_url = url.ajaxurl;
     console.log('PurchasePopUpClosed');
-    console.log(popup);
+    console.log(event.data);
 
     if (event && event.data) {
         console.log(event.data);
@@ -90,7 +90,8 @@ function PurchasePopUpClosed(popup, event) {
 
 function handleCookies(validation_data, resp_data)
 {
-    console.log(resp_data.decoded, null, 4);
+    console.log('holaaa');
+    console.log(resp_data, resp_data.decoded);
     // Set or Update Cookie
     if (resp_data.subscription == '1') {
         handleSubscriptionCookies(resp_data);
@@ -101,6 +102,7 @@ function handleCookies(validation_data, resp_data)
 
 function handleSubscriptionCookies(resp_data)
 {
+    console.log('setting wp_subscription_transact_ cookie');
     var cookie = getCookie('wp_subscription_transact_');
     if (cookie != '') {
         cookie_array = JSON.parse(cookie);
@@ -121,6 +123,7 @@ function handleSubscriptionCookies(resp_data)
 
 function handlePurchaseCookies(validation_data, resp_data)
 {
+    console.log('setting wp_transact_ cookie');
     var cookie = getCookie('wp_transact_');
     if (cookie != '') {
         cookie_array = JSON.parse(cookie);

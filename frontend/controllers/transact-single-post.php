@@ -191,7 +191,7 @@ class FrontEndPostExtension
             /**
              * If it is a subscription
              */
-            if (isset($decoded->sub)) {
+            if (isset($decoded->sub) && ($decoded->sub == true)) {
                 $tableModel = new transactSubscriptionTransactionsModel();
                 $tableModel->create_subscription($decoded->sub_expires, $decoded->uid, $decoded->iat);
                 $subscription = 1;
