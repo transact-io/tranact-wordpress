@@ -115,7 +115,7 @@ class transactHandleButtons
         $extra_id = ($button_type == self::ONLY_PURCHASE) ? 'purchase' : 'subscription';
 
         $button = sprintf(
-            '<div class="transact_purchase_buttonx fade" style="%s"><button style="%s" id="button_purchase %s" onclick="%s">%s</button></div>',
+            '<div class="transact_purchase_button fade" style="%s"><button style="%s" id="button_purchase %s" onclick="%s">%s</button></div>',
             $background_fade_color_style,
             $button_background_color_style . $button_text_color_style,
             $extra_id,

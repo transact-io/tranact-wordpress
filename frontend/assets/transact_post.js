@@ -62,7 +62,7 @@ function PurchasePopUpClosed(popup, event) {
 
     var ajax_url = url.ajaxurl;
     console.log('PurchasePopUpClosed');
-    console.log(event.data);
+    console.log('Event data:', event.data);
 
     if (event && event.data) {
         console.log(event.data);
@@ -90,7 +90,6 @@ function PurchasePopUpClosed(popup, event) {
 
 function handleCookies(validation_data, resp_data)
 {
-    console.log('holaaa');
     console.log(resp_data, resp_data.decoded);
     // Set or Update Cookie
     if (resp_data.subscription == '1') {
