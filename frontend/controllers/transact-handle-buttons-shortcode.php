@@ -21,13 +21,31 @@ class transactHandleShortcodeButtons extends transactHandleButtons
 
     protected $button_type;
 
+    protected $is_single;
+
     public function __construct($post_id, $transact_api, $purchase_text, $subscribe_text, $button_type)
     {
         parent::__construct($post_id, $transact_api);
         $this->purchase_text = $purchase_text;
         $this->subscribe_text = $subscribe_text;
         $this->button_type = $button_type;
+        $this->is_single = (is_single() || get_post_type() == 'page');
     }
+
+    /**
+     * Avoid to show buttons on archive
+     *
+     * @return string
+     */
+    public function print_buttons()
+    {
+        if ($this->is_single) {
+            return parent::print_buttons();
+        } else {
+            return '';
+        }
+    }
+
 
     /**
      * Get button type from post options
