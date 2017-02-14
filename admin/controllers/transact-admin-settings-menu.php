@@ -91,6 +91,26 @@ class AdminSettingsMenuExtension
         );
 
         /*
+         * Subscriptions Manager
+         */
+        add_settings_section(
+            'subscriptions',
+            __( 'Manage Subscriptions', 'transact' ),
+            function() { _e('Click on the checkbox to activate subscriptions on your site. They must be activated on transact.io','transact'); },
+            'transact-settings'
+        );
+
+        // Adding Account ID field
+        add_settings_field(
+            'enable_subscriptions',
+            __( 'Enable Subscriptions', 'transact' ),
+            array($this, 'subscriptions_callback'),
+            'transact-settings',
+            'subscriptions',
+            array('subscriptions')
+        );
+
+        /*
          * Post Types Manager
          */
         // API Transact Settings
@@ -150,6 +170,35 @@ class AdminSettingsMenuExtension
 
     }
 
+    public function subscriptions_callback($arg) {
+        $options = get_option('transact-settings');
+        $subscription_options = isset($options['subscription']) ? $options['subscription'] : 0;
+
+        $subscription_selected = ($subscription_options) ? 'checked' : '';
+        $checkbox_value = ($subscription_options) ? 1 : 0;
+
+        ?>
+            <script>
+                // Handles checkbox for subscription
+                function setValue(id) {
+                    if( jQuery(id).is(':checked')) {
+                        jQuery(id).val(1);
+                    } else {
+                        jQuery(id).val(0);
+                    }
+                }
+            </script>
+
+            <input <?php echo $subscription_selected; ?>
+                id="subscription"
+                type="checkbox"
+                onclick="setValue(subscription)"
+                name="transact-settings[subscription]"
+                value="<?php echo $checkbox_value; ?>"
+            />
+        <?php
+    }
+
     /**
      * CPT Settings callback
      * It will show all visible cpt and make the user select the ones they want transact on.
@@ -168,38 +217,37 @@ class AdminSettingsMenuExtension
         unset($public_post_types['page']);
         unset($public_post_types['attachment']);
 
-        $options = get_option('transact-settings');
-        $cpt_options = isset($options['cpt']) ? $options['cpt'] : array();
-        ?>
-        <script>
-            // Handles checkbox for cpt
-            function setValue(id) {
-                if( jQuery(id).is(':checked')) {
-                    jQuery(id).val(1);
-                } else {
-                    jQuery(id).val(0);
-                }
-            }
-        </script>
-        <table>
-            <tr>
-                <?php foreach ($public_post_types as $key => $cpt): ?>
-                    <?php
+        /**
+         * if the installation has not custom post type.
+         */
+        if (empty($public_post_types)) {
+            ?>
+                <div><i>Your site does not use custom post types.</i></div>
+            <?php
+        } else {
+            $options = get_option('transact-settings');
+            $cpt_options = isset($options['cpt']) ? $options['cpt'] : array();
+            ?>
+            <table>
+                <tr>
+                    <?php foreach ($public_post_types as $key => $cpt): ?>
+                        <?php
                         $cpt_selected = '';
                         $checkbox_value = 0;
-                    
+
                         if ($cpt_options) {
                             $cpt_selected = ( (isset($cpt_options['cpt_' . $key])) && ($cpt_options['cpt_' . $key] == 1) ) ? 'checked' : '';
                             $checkbox_value = ( $cpt_selected == 'checked') ? 1 : 0;
                         }
-                    ?>
-                <td>
-                    <input <?php echo $cpt_selected; ?> type="checkbox" onclick="setValue(cpt_<?php echo $key;?>)" id="cpt_<?php echo $key;?>" name="transact-settings[cpt][cpt_<?php echo $key;?>]" value="<?php echo $checkbox_value; ?>" /><?php echo $key;?>
-                </td>
-                <?php endforeach; ?>
-            </tr>
-        </table>
-        <?php
+                        ?>
+                        <td>
+                            <input <?php echo $cpt_selected; ?> type="checkbox" onclick="setValue(cpt_<?php echo $key;?>)" id="cpt_<?php echo $key;?>" name="transact-settings[cpt][cpt_<?php echo $key;?>]" value="<?php echo $checkbox_value; ?>" /><?php echo $key;?>
+                        </td>
+                    <?php endforeach; ?>
+                </tr>
+            </table>
+            <?php
+        }
     }
 
     /**
@@ -296,19 +344,58 @@ class AdminSettingsMenuExtension
      * We check if the credentials are good, in that case we set a flag to know it in the future
      * In case they are wrong, we set the flag to false and show a message to the publisher
      *
+     * We check if subscription is activated on transact.io
+     * If is not, we unset from our options and tell to the user.
+     *
      */
     public function hook_post_settings_and_validates()
     {
         if (isset($_POST['option_page']) && ($_POST['option_page'] == 'transact-settings'))
         {
             $_POST['transact-settings'] = filter_var_array($_POST['transact-settings'], FILTER_SANITIZE_STRING);
-            $validate_url = (new ConfigParser())->getValidationUrl();
-            $response = (new TransactApi())->validates($validate_url, $_POST['transact-settings']['account_id'], $_POST['transact-settings']['secret_key']);
-            if ($response) {
-                set_transient( SETTING_VALIDATION_TRANSIENT, 1, 0);
-            } else {
-                set_transient( SETTING_VALIDATION_TRANSIENT, 0, 0);
+            if ($this->settings_user_validates($_POST['transact-settings'])) {
+                $this->settings_subscription_validates($_POST['transact-settings']);
             }
+        }
+    }
+
+    /**
+     * Authenticate publisher against transact and set transient depends on result
+     *
+     * @param $post_options
+     * @return bool
+     */
+    protected function settings_user_validates($post_options)
+    {
+        $validate_url = (new ConfigParser())->getValidationUrl();
+        $response = (new TransactApi())->validates($validate_url, $post_options['account_id'], $post_options['secret_key']);
+        if ($response) {
+            set_transient( SETTING_VALIDATION_TRANSIENT, 1, 0);
+        } else {
+            set_transient( SETTING_VALIDATION_TRANSIENT, 0, 0);
+        }
+        return $response;
+    }
+
+    /**
+     * Authenticate publisher subscription against transact, if failure, set subscription to 0 and set transient depends on result
+     *
+     * @param $post_options
+     * @return bool
+     */
+    protected function settings_subscription_validates(&$post_options)
+    {
+        if (isset($post_options['subscription']) && ($post_options['subscription']))
+        {
+            $validate_url = (new ConfigParser())->getValidationSubscriptionUrl();
+            $response = (new TransactApi())->subscriptionValidates($validate_url, $post_options['account_id']);
+            if ($response) {
+                set_transient( SETTING_VALIDATION_SUBSCRIPTION_TRANSIENT, 1, 0);
+            } else {
+                set_transient( SETTING_VALIDATION_SUBSCRIPTION_TRANSIENT, 0, 0);
+                $post_options['subscription'] = 0;
+            }
+            return $response;
         }
     }
 

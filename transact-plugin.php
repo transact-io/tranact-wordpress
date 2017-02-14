@@ -30,6 +30,7 @@ define('FRONTEND_ASSETS_URL', plugins_url('/frontend/assets/', __FILE__));
  * Transient that holds validation status
  */
 define('SETTING_VALIDATION_TRANSIENT', 'setting_validation_transient');
+define('SETTING_VALIDATION_SUBSCRIPTION_TRANSIENT', 'setting_validation_subscription_transient');
 
 
 /**

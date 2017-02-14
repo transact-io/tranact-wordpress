@@ -4,6 +4,9 @@ namespace Transact\Admin\Settings\Post;
 use Transact\Utils\Settings\cpt\SettingsCpt;
 require_once  plugin_dir_path(__FILE__) . '../../utils/transact-settings-cpt.php';
 
+use Transact\Admin\Settings\Shortcode\transactShortcode;
+require_once  plugin_dir_path(__FILE__) . 'transact-shortcode.php';
+
 /**
  * Class AdminSettingsPostExtension
  */
@@ -15,9 +18,12 @@ class AdminSettingsPostExtension
     protected $post_id;
 
     /**
-     * text to be included on the button
+     * Keys for buttons options, by default PURCHASE_AND_SUBSCRIPTION
      */
-    const BUTTON_TEXT_DEFAULT = 'Purchase on Transact.io';
+    const PURCHASE_AND_SUBSCRIPTION = 1;
+    const ONLY_PURCHASE = 2;
+    const ONLY_SUBSCRIBE = 3;
+
 
     /**
      * All hooks to dashboard
@@ -121,6 +127,9 @@ class AdminSettingsPostExtension
         $content = htmlspecialchars( $_POST['transact_premium_content'] );
         update_post_meta( $post_id, 'transact_premium_content', $content );
 
+        $display_button = sanitize_text_field( $_POST['transact_display_button'] );
+        update_post_meta( $post_id, 'transact_display_button', $display_button );
+
         /**
          *
          *  todo: comments premium future development
@@ -152,7 +161,8 @@ class AdminSettingsPostExtension
         // Use get_post_meta to retrieve an existing value from the database.
         $value[1] = get_post_meta( $post->ID, 'transact_price', true );
         $value[2] = get_post_meta( $post->ID, 'transact_item_code', true );
-        $value[3] = get_post_meta( $post->ID, 'transact_premium_content' , true ) ;
+        $value[3] = get_post_meta( $post->ID, 'transact_premium_content' , true );
+        $value[4] = get_post_meta( $post->ID, 'transact_display_button' , true );
 
         /**
          *  todo: comments premium future development
@@ -193,7 +203,7 @@ class AdminSettingsPostExtension
         </script>
         **/
         ?>
-        <br/>
+        <br xmlns="http://www.w3.org/1999/html"/>
         <label for="transact_price">
             <?php _e( 'Premium Price', 'transact' ); ?>
         </label>
@@ -204,6 +214,34 @@ class AdminSettingsPostExtension
         </label>
         <input readonly type="text" size="35" id="transact_item_code" name="transact_item_code" value="<?php echo esc_attr( $value[2] ); ?>" />
         <br/>
+        <?php
+        /**
+         * Check if subscription is enable by the publisher to show button options
+         */
+        $options = get_option('transact-settings');
+        $subscription_options = isset($options['subscription']) ? $options['subscription'] : 0;
+        if ($subscription_options) {
+            $selected_purchased_and_subscription = ($value[4] == self::PURCHASE_AND_SUBSCRIPTION) ? 'selected' : '';
+            $selected_purchased = ($value[4] == self::ONLY_PURCHASE) ? 'selected' : '';
+            $selected_subscription = ($value[4] == self::ONLY_SUBSCRIBE) ? 'selected' : '';
+            ?>
+            <label for="transact_display_button">
+                <?php _e( 'Display Button', 'transact' ); ?>
+            </label>
+            <select id="transact_display_button" name="transact_display_button">
+                <option <?php echo $selected_purchased_and_subscription;?> value="<?php echo self::PURCHASE_AND_SUBSCRIPTION;?>">
+                    <?php _e('Display Purchase and Subscribe Button', 'transact');?>
+                </option>
+                <option <?php echo $selected_purchased;?> value="<?php echo self::ONLY_PURCHASE;?>">
+                    <?php _e('Display Only Purchase Button', 'transact');?>
+                </option>
+                <option <?php echo $selected_subscription;?> value="<?php echo self::ONLY_SUBSCRIBE;?>">
+                    <?php _e('Display Only Subscribe Button', 'transact');?>
+                </option>
+            </select>
+            <?php
+        }
+        ?>
         <?php
         /**
          *  todo: comments premium future development
@@ -245,20 +283,9 @@ class AdminSettingsPostExtension
      */
     public function transact_shortcode( $atts )
     {
-        $options = get_option( 'transact-settings' );
-
-        $button = '<button id="{{button_id}}" style="' . 
-            (isset($options['background_color']) ? 'background-color:' . esc_attr($options['background_color']) . ';' : '') . 
-            (isset($options['text_color']) ? 'color:' . esc_attr($options['text_color']) . ';' : '') . 
-            '" class="transact_purchase_button" onclick="transactApi.authorize(PurchasePopUpClosed);">{{button_text}}</button>';
-
-        $a = shortcode_atts( array(
-            'id'   => 'button_purchase',
-            'text' => __(self::BUTTON_TEXT_DEFAULT, 'transact'),
-        ), $atts );
-
-        $button = str_replace(array('{{button_id}}', '{{button_text}}'), array($a['id'], $a['text']), $button);
-        return $button;
+        global $post;
+        $shortcode = new transactShortcode($atts, $post->ID);
+        return $shortcode->print_shortcode();
     }
 
 }

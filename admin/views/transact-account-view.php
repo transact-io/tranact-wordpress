@@ -13,6 +13,12 @@
     </div>
 <?php endif; ?>
 
+<?php if (get_transient(SETTING_VALIDATION_SUBSCRIPTION_TRANSIENT) == 0): ?>
+    <div class="error">
+        <p>You need to activate your subscription on transact.io</p>
+    </div>
+<?php endif; ?>
+
 <form method="post" action="options.php">
     <?php
         settings_fields( 'transact-settings' );

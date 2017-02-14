@@ -115,6 +115,21 @@ class TransactApi
         return json_encode($response);
     }
 
+    /**
+     * Gets subscription token to set up on transact js library
+     *
+     * @return string return token json {"token":"xxx"}
+     */
+    function get_subscription_token()
+    {
+        $this->init_sale_parameters($this->transact);
+
+        $response = array(
+            'token' => $this->transact->getSubscriptionToken()
+        );
+        return json_encode($response);
+    }
+
     function decode_token($token)
     {
         $this->transact->setSecret($this->secret_id);

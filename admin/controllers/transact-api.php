@@ -48,6 +48,28 @@ class TransactApi
     }
 
     /**
+     * Validate subscription against transact.io
+     *
+     * @param $validate_url
+     * @param $account_id
+     * @return bool
+     */
+    public function subscriptionValidates($validate_url, $account_id)
+    {
+        $url = str_replace(self::ACCOUNT_ID_KEY, $account_id, $validate_url);
+        $response = $this->curl_get($url);
+
+        /**
+         * query show an array of two elements (monthly and anual subscription)
+         */
+        if ($response['code'] == 200 && (count(json_decode($response['string'])) > 0)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * It creates the digest to validate
      * todo: right now second parameter is hardcoded to test
      *

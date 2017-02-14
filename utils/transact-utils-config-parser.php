@@ -24,6 +24,11 @@ class ConfigParser
     const API_AUTHENTICATION = 'api_authentication';
 
     /**
+     * key for API_SUBSCRIPTION
+     */
+    const API_SUBSCRIPTION = 'api_subscription_auth';
+
+    /**
      * Key for JS_LIBRARY
      */
     const JS_LIBRARY = 'js_xsact_library';
@@ -64,6 +69,16 @@ class ConfigParser
     public function getValidationUrl()
     {
         return $this->config[self::API_HOST] . $this->config[self::API_AUTHENTICATION];
+    }
+
+    /**
+     * Retrieves Api validation subscription url
+     *
+     * @return string api subscription validation url
+     */
+    public function getValidationSubscriptionUrl()
+    {
+        return $this->config[self::API_HOST] . $this->config[self::API_SUBSCRIPTION];
     }
 
 }

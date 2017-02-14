@@ -7,11 +7,17 @@ require_once  plugin_dir_path(__FILE__) . 'transact-api.php';
 use Transact\Utils\Config\Parser\ConfigParser;
 require_once  plugin_dir_path(__FILE__) . '../../utils/transact-utils-config-parser.php';
 
+use Transact\Models\transactTransactionsTable\transactSubscriptionTransactionsModel;
+require_once  plugin_dir_path(__FILE__) . '../../models/transact-subscription-transactions-table.php';
+
 use Transact\Models\transactTransactionsTable\transactTransactionsModel;
 require_once  plugin_dir_path(__FILE__) . '../../models/transact-transactions-table.php';
 
 use Transact\Utils\Settings\cpt\SettingsCpt;
 require_once  plugin_dir_path(__FILE__) . '../../utils/transact-settings-cpt.php';
+
+use Transact\FrontEnd\Controllers\Buttons\transactHandleButtons;
+require_once  plugin_dir_path(__FILE__) . 'transact-handle-buttons.php';
 
 
 /**
@@ -19,13 +25,6 @@ require_once  plugin_dir_path(__FILE__) . '../../utils/transact-settings-cpt.php
  */
 class FrontEndPostExtension
 {
-    /**
-     * text to be included on the button
-     */
-    const BUTTON_TEXT = 'Purchase with Transact for';
-    const TOKENS_TEXT = 'tokens';
-    const TOKEN_TEXT = 'token';
-
     /**
      * config controller
      * @var
@@ -50,10 +49,16 @@ class FrontEndPostExtension
         add_action( 'wp_enqueue_scripts', array($this, 'load_css_xsact_library'));
 
         /**
-         * Registering Ajax Calls on single post
+         * Registering Ajax Calls on single post (Purchase Token)
          */
         add_action( 'wp_ajax_nopriv_get_token', array($this, 'request_token_callback' ));
         add_action( 'wp_ajax_get_token',        array($this, 'request_token_callback' ));
+
+        /**
+         * Registering Ajax Calls on single post (Subscription Token)
+         */
+        add_action( 'wp_ajax_nopriv_get_subscription_token', array($this, 'request_subscription_token_callback' ));
+        add_action( 'wp_ajax_get_subscription_token',        array($this, 'request_subscription_token_callback' ));
 
         /**
          * Registering callback when user buys the item
@@ -93,29 +98,8 @@ class FrontEndPostExtension
         } else {
             global $post;
             if (!has_shortcode($post->post_content, 'transact_button')) {
-                $price = $transact_api->get_price();
-                $token_text = __(self::TOKENS_TEXT, 'transact');
-                // if singular token
-                if ($price == 1)
-                    $token_text = __(self::TOKEN_TEXT, 'transact');
-
-                $button_background_color_style = (isset($options['background_color']) ? 'background-color:' . esc_attr($options['background_color']) . ';' : '');
-                $button_text_color_style = (isset($options['text_color']) ? 'color:' . esc_attr($options['text_color']) . ';' : '');
-                $background_fade_color_style = '';
-                if(isset($options['page_background_color'])) {
-                    list($r, $g, $b) = sscanf($options['page_background_color'], "#%02x%02x%02x");
-                    $background_fade_color_style = "background:linear-gradient(to bottom, rgba($r,$g,$b,0), rgba($r,$g,$b,1) 68%, rgba($r,$g,$b,1))";
-                }
-
-                $button = '<div class="transact_purchase_button fade" style="' .
-                    $background_fade_color_style . '">' .
-                        '<button style="' . $button_background_color_style . $button_text_color_style . 
-                        '" id="button_purchase" onclick="transactApi.authorize(PurchasePopUpClosed);">' . 
-                        __(self::BUTTON_TEXT, 'transact') .
-                        ' '.  $price . ' ' . $token_text .
-                        '</button>
-                    </div>';
-                $content =  $content . $button;
+                $button_controller = new transactHandleButtons($this->post_id, $transact_api);
+                $content = $content . $button_controller->print_buttons();
             }
             return $content;
         }
@@ -178,7 +162,22 @@ class FrontEndPostExtension
     }
 
     /**
-     *
+     * admin-ajax.php?action=get_subscription_token
+     * get_subscription_token ajax call handler to get and set subscription Token from Transact (onload)
+     */
+    public function request_subscription_token_callback()
+    {
+        $transact = new TransactApi($_REQUEST['post_id']);
+        $token = $transact->get_subscription_token();
+        header('Content-Type: text/javascript; charset=utf8');
+        echo $token;
+        exit;
+    }
+
+    /**
+     * Callback from purchase
+     * Check if it is subscription or a normal purchase
+     * Acts accordingly (record on DB)
      */
     public function purchased_content_callback()
     {
@@ -187,16 +186,26 @@ class FrontEndPostExtension
         header('Content-Type: text/javascript; charset=utf8');
         try {
             $decoded = $transact->decode_token($_REQUEST['t']);
+            $subscription = 0;
 
             /**
-             * Creates a row on transaction table with purchase info
+             * If it is a subscription
              */
-            $tableModel = new transactTransactionsModel();
-            $tableModel->create_transaction($_REQUEST['post_id'], $decoded->uid, $decoded->iat);
-
+            if (isset($decoded->sub) && ($decoded->sub == true)) {
+                $tableModel = new transactSubscriptionTransactionsModel();
+                $tableModel->create_subscription($decoded->sub_expires, $decoded->uid, $decoded->iat);
+                $subscription = 1;
+            } else {
+                /**
+                 * Creates a row on transaction table with purchase info
+                 */
+                $tableModel = new transactTransactionsModel();
+                $tableModel->create_transaction($_REQUEST['post_id'], $decoded->uid, $decoded->iat);
+            }
                 echo json_encode(array(
                     'status' => 'OK',
-                    'decoded' => $decoded
+                    'decoded' => $decoded,
+                    'subscription' => $subscription
                 ));
 
         } catch (Exception $e) {
