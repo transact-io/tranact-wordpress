@@ -71,6 +71,9 @@ We are cheaper than any credit card service for small amounts.
 
 == Changelog ==
 
+= 1.2.1 =
+* Fix purchase and subscription button. Prevent multiple buttons from occluding each other.
+
 = 1.2.0 =
 * Support for subscriptions
 
