@@ -71,7 +71,7 @@ We are cheaper than any credit card service for small amounts.
 
 == Changelog ==
 
-= 1.2.1 =
+= 1.2.2 =
 * Change Tokens to Cents.
 
 = 1.2.1 =
