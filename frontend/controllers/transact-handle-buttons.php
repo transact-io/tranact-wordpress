@@ -12,8 +12,8 @@ class transactHandleButtons
      * text to be included on the button
      */
     const BUTTON_TEXT = 'Purchase with Transact for';
-    const TOKENS_TEXT = 'tokens';
-    const TOKEN_TEXT = 'token';
+    const TOKENS_TEXT = 'cents';
+    const TOKEN_TEXT = 'cent';
     const SUBSCRIBE_TEXT = 'Subscribe';
 
     /**
