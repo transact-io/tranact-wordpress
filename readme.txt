@@ -1,7 +1,7 @@
 === Plugin Name ===
 Contributors: transact
 Donate link: https://transact.io/
-Tags: payments, micropayments, e-commerce, paywall, free
+Tags: payments, micropayments, e-commerce, paywall, free, pay, online payment, subscription, subscriptions, monetization, premium content, premium
 Requires at least: 4.5
 Tested up to: 4.7.1
 Stable tag: 4.3
@@ -14,15 +14,20 @@ Micropayments from $0.01.   Receive payments for digital content on WordPress.
 
 Transact.io brings A la Carte revenue model to digital media.  Charge for content within your posts.
 
-You can charge by:
-* Single post, you can set the price from $0.01 to $20.00
-* Subscriptions,  allow for unlimited content for a fixed monthly or annual rate
+Features:
 
+* The publisher sets the price, which can be as low as $0.01
+* Transact.io enables publishers to regain control of distribution.
+* Single post, you can set the price from $0.01 to $20.00
+* Optionally you can enable Subscriptions,  allow for unlimited content for a fixed monthly or annual rate
+* Transact has lower fees than credit cards or paypal.  For transactions less than $1 the commision is 12%, Over $1 it is 2%.
 
 Read more about us at https://transact.io/
 
 This plugin is open source.   Source code is available at https://gitlab.com/transact/transact-wordpress
 
+If you need help setting up your account please do not hesitate to contact us: 
+https://transact.io/about/contact
 
 == Installation ==
 
