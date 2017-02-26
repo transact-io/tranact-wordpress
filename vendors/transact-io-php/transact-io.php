@@ -103,6 +103,10 @@ class TransactIoMsg {
     $this->token['url'] = $val;
   }
 
+  function setAffiliate($val) {
+    if (is_numeric($val))
+      $this->token['aff'] = (int) $val;
+  }
   function getToken() {
     $this->token['iat'] = time();  // set timestamp
 
