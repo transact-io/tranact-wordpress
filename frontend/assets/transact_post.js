@@ -5,7 +5,7 @@ var subscribe_token = {}; // subscription
 
 jQuery(function() {
     var ajax_url = url.ajaxurl;
-    jQuery.getJSON(ajax_url, { 'action' : 'get_token', 'post_id' : url.post_id })
+    jQuery.getJSON(ajax_url, { 'action' : 'get_token', 'post_id' : url.post_id, 'affiliate_id' : url.affiliate_id })
         .success(function(data) {
             console.log('got token: '+ data.token);
             purchase_token = data.token;
@@ -17,7 +17,7 @@ jQuery(function() {
 
     // If subscription button is on the site, get subscription token too
     if(document.getElementById('button_purchase subscription')) {
-        jQuery.getJSON(ajax_url, { 'action' : 'get_subscription_token', 'post_id' : url.post_id })
+        jQuery.getJSON(ajax_url, { 'action' : 'get_subscription_token', 'post_id' : url.post_id, 'affiliate_id' : url.affiliate_id })
             .success(function(data) {
                 console.log('got subscribe_token: '+ data.token);
                 subscribe_token = data.token;

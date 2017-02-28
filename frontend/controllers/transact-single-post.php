@@ -121,7 +121,8 @@ class FrontEndPostExtension
         $url = array(
             'url' => plugins_url('/ajax/ajax-call.php', __FILE__),
             'ajaxurl' => admin_url( 'admin-ajax.php' ),
-            'post_id' => $this->post_id
+            'post_id' => $this->post_id,
+            'affiliate_id' => $this->get_affiliate()
         );
 
         /**
@@ -130,6 +131,19 @@ class FrontEndPostExtension
         wp_register_script( 'transact_callback',  FRONTEND_ASSETS_URL . 'transact_post.js', array('jquery') );
         wp_localize_script( 'transact_callback', 'url', $url );
         wp_enqueue_script( 'transact_callback' );
+    }
+
+    /**
+     * Get Affiliated reference from url if exists
+     *
+     * @return int|string
+     */
+    function get_affiliate()
+    {
+        if (!$affiliate = filter_input(INPUT_GET, "aff", FILTER_VALIDATE_INT)) {
+            $affiliate = '';
+        }
+        return $affiliate;
     }
 
     /**
@@ -155,6 +169,9 @@ class FrontEndPostExtension
     public function request_token_callback()
     {
         $transact = new TransactApi($_REQUEST['post_id']);
+        if (!empty($_REQUEST['affiliate_id'])) {
+            $transact->set_affiliate((int)$_REQUEST['affiliate_id']);
+        }
         $token = $transact->get_token();
         header('Content-Type: text/javascript; charset=utf8');
         echo $token;
@@ -168,6 +185,9 @@ class FrontEndPostExtension
     public function request_subscription_token_callback()
     {
         $transact = new TransactApi($_REQUEST['post_id']);
+        if (!empty($_REQUEST['affiliate_id'])) {
+            $transact->set_affiliate((int)$_REQUEST['affiliate_id']);
+        }
         $token = $transact->get_subscription_token();
         header('Content-Type: text/javascript; charset=utf8');
         echo $token;

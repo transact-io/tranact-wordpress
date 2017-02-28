@@ -93,7 +93,6 @@ class TransactApi
 
         $this->article_title = get_the_title($this->post_id);
         $this->article_url   = get_permalink($this->post_id);
-        $this->affiliate     = $this->get_affiliate();
 
         /**
          * todo: what are the options?
@@ -104,16 +103,13 @@ class TransactApi
     }
 
     /**
-     * Get Affiliated reference from url if exists
+     * Set Affiliated reference
      *
-     * @return int|null
+     * @param int $affiliate_id
      */
-    function get_affiliate()
+    function set_affiliate($affiliate_id)
     {
-        if (!$affiliate = filter_input(INPUT_GET, "aff", FILTER_VALIDATE_INT)) {
-            $affiliate = null;
-        }
-        return $affiliate;
+        $this->affiliate = $affiliate_id;
     }
 
     /**
