@@ -1,7 +1,7 @@
 === Plugin Name ===
 Contributors: transact
 Donate link: https://transact.io/
-Tags: payments, micropayments, e-commerce, paywall, free, pay, online payment, subscription, subscriptions, monetization, premium content, premium
+Tags: payments, micropayments, e-commerce, paywall, free, pay, online payment, subscription, subscriptions, monetization, premium content, premium, paywall, pay per view, content monetization
 Requires at least: 4.5
 Tested up to: 4.7.1
 Stable tag: 4.3
@@ -75,6 +75,10 @@ We are cheaper than any credit card service for small amounts.
 3.  Purchase button on your page, look can be customized on your theme
 
 == Changelog ==
+
+= 1.3.0 =
+* Support for affiliates. you can put aff=ID in the URL to share affiliate revenue.
+Note, you must configure affiliate settings on transact publisher dashboard.
 
 = 1.2.2 =
 * Change Tokens to Cents.
