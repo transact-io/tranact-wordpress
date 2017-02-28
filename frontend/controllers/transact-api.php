@@ -58,6 +58,8 @@ class TransactApi
     protected $method;
     protected $alg;
 
+    protected $affiliate;
+
     /**
      * @param $post_id
      * @throws \Exception
@@ -91,6 +93,7 @@ class TransactApi
 
         $this->article_title = get_the_title($this->post_id);
         $this->article_url   = get_permalink($this->post_id);
+        $this->affiliate     = $this->get_affiliate();
 
         /**
          * todo: what are the options?
@@ -98,6 +101,19 @@ class TransactApi
         $this->method = 'CLOSE';
         $this->alg    = 'HS256';
 
+    }
+
+    /**
+     * Get Affiliated reference from url if exists
+     *
+     * @return int|null
+     */
+    function get_affiliate()
+    {
+        if (!$affiliate = filter_input(INPUT_GET, "aff", FILTER_VALIDATE_INT)) {
+            $affiliate = null;
+        }
+        return $affiliate;
     }
 
     /**
@@ -173,6 +189,9 @@ class TransactApi
 
         // Optional Unique ID of this sale
         $transact->setUid($this->sales_id);
+
+        // Set Affiliated if exists
+        $transact->setAffiliate($this->affiliate);
 
         // Set your own meta data
         // Note you must keep this short to avoid going over the 1024 byte limt
