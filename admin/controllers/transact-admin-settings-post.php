@@ -130,6 +130,9 @@ class AdminSettingsPostExtension
         $display_button = sanitize_text_field( $_POST['transact_display_button'] );
         update_post_meta( $post_id, 'transact_display_button', $display_button );
 
+        $donations = sanitize_text_field( $_POST['transact_donations'] );
+        update_post_meta( $post_id, 'transact_donations', $donations );
+
         /**
          *
          *  todo: comments premium future development
@@ -163,6 +166,7 @@ class AdminSettingsPostExtension
         $value[2] = get_post_meta( $post->ID, 'transact_item_code', true );
         $value[3] = get_post_meta( $post->ID, 'transact_premium_content' , true );
         $value[4] = get_post_meta( $post->ID, 'transact_display_button' , true );
+        $value[5] = get_post_meta( $post->ID, 'transact_donations' , true );
 
         /**
          *  todo: comments premium future development
@@ -214,13 +218,33 @@ class AdminSettingsPostExtension
         </label>
         <input readonly type="text" size="35" id="transact_item_code" name="transact_item_code" value="<?php echo esc_attr( $value[2] ); ?>" />
         <br/>
+
+        <?php
+        /**
+         * Check if donations is enable by the publisher to show donations options
+         */
+        $options = get_option('transact-settings');
+        $donations_options = isset($options['donations']) ? $options['donations'] : 0;
+        if ($donations_options) {
+            $donations_selected = (($value[5] == 1) ? 'checked' : '');
+            ?>
+            <label for="transact_display_button">
+                <?php _e( 'Article with Donations', 'transact' ); ?>
+            </label>
+            <input type="checkbox" id="transact_donations" name="transact_donations" value="1" <?php echo $donations_selected;?>>
+            <br/>
+            <?php
+        }
+        ?>
+
         <?php
         /**
          * Check if subscription is enable by the publisher to show button options
+         * And if donation is not selected on transact settings and post, otherwise does not make sense
+         * to choose kind of button
          */
-        $options = get_option('transact-settings');
         $subscription_options = isset($options['subscription']) ? $options['subscription'] : 0;
-        if ($subscription_options) {
+        if ($subscription_options && (!($donations_options && $value[5]))) {
             $selected_purchased_and_subscription = ($value[4] == self::PURCHASE_AND_SUBSCRIPTION) ? 'selected' : '';
             $selected_purchased = ($value[4] == self::ONLY_PURCHASE) ? 'selected' : '';
             $selected_subscription = ($value[4] == self::ONLY_SUBSCRIBE) ? 'selected' : '';
