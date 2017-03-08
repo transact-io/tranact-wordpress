@@ -15,6 +15,7 @@ class transactHandleButtons
     const TOKENS_TEXT = 'cents';
     const TOKEN_TEXT = 'cent';
     const SUBSCRIBE_TEXT = 'Subscribe';
+    const DONATE_TEXT = 'Donate';
 
     /**
      * Keys for buttons options, by default PURCHASE_AND_SUBSCRIPTION
@@ -44,27 +45,43 @@ class transactHandleButtons
     }
 
     /**
+     * Will check if user wants donation on this article, in that case will show donation placeholder otherwise
      * Will check if the user have a subscription and which kind of button want to use (given on post settings)
      *
      * @return string
      */
     public function print_buttons()
     {
-        $button_type = $this->get_button_type();
-        switch($button_type) {
-            case (self::PURCHASE_AND_SUBSCRIPTION):
-                return $this->print_purchase_and_subscription($this->options, $this->transact_api);
-                break;
-            case (self::ONLY_PURCHASE):
-                return $this->print_single_button($this->options, $this->transact_api, $button_type);
-                break;
-            case (self::ONLY_SUBSCRIBE):
-                return $this->print_single_button($this->options, $this->transact_api, $button_type);
-                break;
-            default:
-                return $this->print_single_button($this->options, $this->transact_api, self::ONLY_PURCHASE);
-                break;
+        if ($this->get_if_article_donation()) {
+            return $this->print_donation_button();
+        } else {
+            $button_type = $this->get_button_type();
+            switch($button_type) {
+                case (self::PURCHASE_AND_SUBSCRIPTION):
+                    return $this->print_purchase_and_subscription($this->options, $this->transact_api);
+                    break;
+                case (self::ONLY_PURCHASE):
+                    return $this->print_single_button($this->options, $this->transact_api, $button_type);
+                    break;
+                case (self::ONLY_SUBSCRIBE):
+                    return $this->print_single_button($this->options, $this->transact_api, $button_type);
+                    break;
+                default:
+                    return $this->print_single_button($this->options, $this->transact_api, self::ONLY_PURCHASE);
+                    break;
+            }
         }
+    }
+
+    /**
+     * Returning full donation button with price input.
+     *
+     * @return string
+     */
+    public function print_donation_button() {
+        $button = $this->print_donate_button($this->options);
+        $input = '<input type="number" name="donate" id="donate_val" onchange="setDonateAmount()" value="10"/>';
+        return $button . $input;
     }
 
     /**
@@ -75,6 +92,20 @@ class transactHandleButtons
     public function get_button_type()
     {
         return get_post_meta( $this->post_id, 'transact_display_button' , true );
+    }
+
+    /**
+     * Checks if donations are activated on transact settings and on post level.
+     * @return bool
+     */
+    public function get_if_article_donation()
+    {
+        if (isset($this->options['donations']) && $this->options['donations']) {
+            if (get_post_meta( $this->post_id, 'transact_donations' , true )) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -117,6 +148,33 @@ class transactHandleButtons
         $button = sprintf(
             '<div class="transact_purchase_button fade" style="%s"><button style="%s" id="button_purchase %s" onclick="%s">%s</button></div>',
             $background_fade_color_style,
+            $button_background_color_style . $button_text_color_style,
+            $extra_id,
+            $onclick,
+            $button_text
+        );
+
+        return $button;
+    }
+
+    /**
+     * Taking care or printing only button with transact styling taken from settings
+     *
+     * @param $options
+     * @return string
+     */
+    protected function print_donate_button($options)
+    {
+        $button_text = self::DONATE_TEXT;
+
+        $button_background_color_style = (isset($options['background_color']) ? 'background-color:' . esc_attr($options['background_color']) . ';' : '');
+        $button_text_color_style = (isset($options['text_color']) ? 'color:' . esc_attr($options['text_color']) . ';' : '');
+
+        $onclick = 'doDonate()';
+        $extra_id = 'donation';
+
+        $button = sprintf(
+            '<button style="%s" id="button_purchase %s" onclick="%s">%s</button>',
             $button_background_color_style . $button_text_color_style,
             $extra_id,
             $onclick,
