@@ -168,6 +168,26 @@ class AdminSettingsMenuExtension
             array('page_background_color') // Default value
         );
 
+        /*
+         * Donations Manager
+         */
+        add_settings_section(
+            'donations',
+            __( 'Manage Donations', 'transact' ),
+            function() { _e('Click on the checkbox to activate Donations on your site.','transact'); },
+            'transact-settings'
+        );
+
+        // Adding Account ID field
+        add_settings_field(
+            'enable_donations',
+            __( 'Enable Donations', 'transact' ),
+            array($this, 'donations_callback'),
+            'transact-settings',
+            'donations',
+            array('donations')
+        );
+
     }
 
     public function subscriptions_callback($arg) {
@@ -195,6 +215,35 @@ class AdminSettingsMenuExtension
                 onclick="setValue(subscription)"
                 name="transact-settings[subscription]"
                 value="<?php echo $checkbox_value; ?>"
+            />
+        <?php
+    }
+
+    public function donations_callback($arg) {
+        $options = get_option('transact-settings');
+        $donations_options = isset($options['donations']) ? $options['donations'] : 0;
+
+        $donations_selected = ($donations_options) ? 'checked' : '';
+        $checkbox_value = ($donations_options) ? 1 : 0;
+
+        ?>
+        <script>
+            // Handles checkbox for subscription
+            function setValue(id) {
+                if( jQuery(id).is(':checked')) {
+                    jQuery(id).val(1);
+                } else {
+                    jQuery(id).val(0);
+                }
+            }
+        </script>
+
+        <input <?php echo $donations_selected; ?>
+            id="donations"
+            type="checkbox"
+            onclick="setValue(donations)"
+            name="transact-settings[donations]"
+            value="<?php echo $checkbox_value; ?>"
             />
         <?php
     }
