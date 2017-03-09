@@ -96,6 +96,14 @@ class FrontEndPostExtension
         if (!$this->check_scope()) {
             return $content;
         }
+
+        /**
+         * If the page is set to donation, we always use free content.
+         */
+        if ($this->check_if_post_is_under_donation($this->post_id)) {
+            return $content;
+        }
+
         $transact_api = new TransactApi($this->post_id);
         if ($transact_api->is_premium()) {
             $premium_content = get_post_meta( get_the_ID(), 'transact_premium_content' , true ) ;
@@ -120,8 +128,10 @@ class FrontEndPostExtension
             return;
         }
 
+        $redirect_page = '';
         $donation = 0;
         if ($this->check_if_post_is_under_donation($this->post_id)) {
+            $redirect_page = $this->check_redirect_after_donation($this->post_id);
             $donation = 1;
         }
 
@@ -136,6 +146,10 @@ class FrontEndPostExtension
             'affiliate_id' => $this->get_affiliate(),
             'donation' => $donation
         );
+
+        if (strlen($redirect_page) > 0) {
+            $url['redirect_after_donation'] = $redirect_page;
+        }
 
         /**
          * Loading transact scripts (callbacks)
@@ -241,6 +255,21 @@ class FrontEndPostExtension
             }
         }
         return false;
+    }
+
+    /**
+     * Check if user has set a redirect after donation.
+     *
+     * @param $post_id
+     * @return string empty if not url
+     */
+    public function check_redirect_after_donation($post_id) {
+        $redirect_url = '';
+        $redirect_id = get_post_meta( $post_id, 'transact_redirect_after_donation' , true );
+        if (is_numeric($redirect_id) && $redirect_id > 0) {
+            $redirect_url = get_page_link($redirect_id);
+        }
+        return $redirect_url;
     }
 
     /**

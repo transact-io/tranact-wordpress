@@ -5,10 +5,15 @@ var subscribe_token = {}; // subscription token
 var donate_token = {}; // donate token
 var ajax_url = {}; // Ajax URL
 var main_url = {}; // Main url
+var custom_redirect = ''; // Custom redirect (after donation for instance)
 
 jQuery(function() {
     main_url = url;
     ajax_url = url.ajaxurl;
+
+    if (url.redirect_after_donation) {
+        custom_redirect = url.redirect_after_donation;
+    }
 
     if (url.donation == 1) {
         // 10 is value by default defined on the html input
@@ -122,8 +127,12 @@ function PurchasePopUpClosed(popup, event) {
                 console.log('Success Response data:', resp_data);
                 // Handles cookie
                 handleCookies(validation_data, resp_data);
-                // Reload
-                location.reload();
+                // if custom redirect, send user to it, otherwise reload
+                if (custom_redirect.length > 0) {
+                    window.location = custom_redirect;
+                } else {
+                    location.reload();
+                }
             })
             .fail(function(resp_data) {
                 console.log('Error Response data:', resp_data);
