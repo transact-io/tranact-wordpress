@@ -97,26 +97,46 @@ class FrontEndPostExtension
             return $content;
         }
 
+        $transact_api = new TransactApi($this->post_id);
         /**
          * If the page is set to donation, we always use free content.
          */
         if ($this->check_if_post_is_under_donation($this->post_id)) {
-            return $content;
-        }
-
-        $transact_api = new TransactApi($this->post_id);
-        if ($transact_api->is_premium()) {
-            $premium_content = get_post_meta( get_the_ID(), 'transact_premium_content' , true ) ;
-            // wpautop emulates normal wp editor behaviour (adding <p> automatically)
-            return wpautop(htmlspecialchars_decode($premium_content));
+            return $this->get_free_content_with_buttons($content, $transact_api);
+        } else if ($transact_api->is_premium()) {
+            return $this->get_premium_content();
         } else {
-            global $post;
-            if (!has_shortcode($post->post_content, 'transact_button')) {
-                $button_controller = new transactHandleButtons($this->post_id, $transact_api);
-                $content = $content . $button_controller->print_buttons();
-            }
-            return $content;
+            return $this->get_free_content_with_buttons($content, $transact_api);
         }
+    }
+
+    /**
+     * Function to get premium content from transact_premium_content metadata.
+     *
+     * @return string
+     */
+    function get_premium_content()
+    {
+        $premium_content = get_post_meta( $this->post_id, 'transact_premium_content' , true ) ;
+        // wpautop emulates normal wp editor behaviour (adding <p> automatically)
+        return wpautop(htmlspecialchars_decode($premium_content));
+    }
+
+    /**
+     * Function to get free content with buttons
+     *
+     * @param $content
+     * @param $transact_api
+     * @return string
+     */
+    function get_free_content_with_buttons($content, $transact_api)
+    {
+        global $post;
+        if (!has_shortcode($post->post_content, 'transact_button')) {
+            $button_controller = new transactHandleButtons($this->post_id, $transact_api);
+            $content = $content . $button_controller->print_buttons();
+        }
+        return $content;
     }
 
     /**
