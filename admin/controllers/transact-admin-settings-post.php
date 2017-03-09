@@ -24,6 +24,12 @@ class AdminSettingsPostExtension
     const ONLY_PURCHASE = 2;
     const ONLY_SUBSCRIBE = 3;
 
+    /**
+     * Text for No redirect (donations)
+     */
+    const NO_REDIRECT_TEXT = 'No Redirect';
+    const NO_REDIRECT_VALUE = '0';
+
 
     /**
      * All hooks to dashboard
@@ -133,6 +139,10 @@ class AdminSettingsPostExtension
         $donations = sanitize_text_field( $_POST['transact_donations'] );
         update_post_meta( $post_id, 'transact_donations', $donations );
 
+        $redirect_after_donation = sanitize_text_field( $_POST['transact_redirect_after_donation'] );
+        update_post_meta( $post_id, 'transact_redirect_after_donation', $redirect_after_donation );
+
+
         /**
          *
          *  todo: comments premium future development
@@ -167,6 +177,7 @@ class AdminSettingsPostExtension
         $value[3] = get_post_meta( $post->ID, 'transact_premium_content' , true );
         $value[4] = get_post_meta( $post->ID, 'transact_display_button' , true );
         $value[5] = get_post_meta( $post->ID, 'transact_donations' , true );
+        $value[6] = get_post_meta( $post->ID, 'transact_redirect_after_donation' , true );
 
         /**
          *  todo: comments premium future development
@@ -233,6 +244,34 @@ class AdminSettingsPostExtension
             </label>
             <input type="checkbox" id="transact_donations" name="transact_donations" value="1" <?php echo $donations_selected;?>>
             <br/>
+            <?php
+
+            /**
+             * If Donations are on, client will select which page the user will be redirected after donation (if it is wanted by publisher)
+             * We get ALL pages information
+             */
+            $args = array(
+                'sort_order' => 'asc',
+                'sort_column' => 'post_title',
+                'post_type' => 'page',
+                'post_status' => 'publish'
+            );
+            $pages = get_pages($args);
+            ?>
+            <label for="transact_redirect_after_donation">
+                <?php _e( 'Redirect After Donation', 'transact' ); ?>
+            </label>
+            <select id="transact_redirect_after_donation" name="transact_redirect_after_donation">
+                <option value="<?php echo self::NO_REDIRECT_VALUE;?>">
+                    <?php _e(self::NO_REDIRECT_TEXT, 'transact');?>
+                </option>
+                <?php foreach ($pages as $page): ?>
+                    <?php $selected = ($value[6] == $page->ID) ? 'selected' : ''; ?>
+                    <option <?php echo $selected; ?> value="<?php echo $page->ID; ?>">
+                        <?php echo $page->post_title; ?>
+                    </option>
+                <?php endforeach;?>
+            </select>
             <?php
         }
         ?>
