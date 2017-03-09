@@ -1,33 +1,72 @@
 var package = {};
 
 var purchase_token = {}; // token used for buying single item
-var subscribe_token = {}; // subscription
+var subscribe_token = {}; // subscription token
+var donate_token = {}; // donate token
+var ajax_url = {}; // Ajax URL
+var main_url = {}; // Main url
 
 jQuery(function() {
-    var ajax_url = url.ajaxurl;
-    jQuery.getJSON(ajax_url, { 'action' : 'get_token', 'post_id' : url.post_id, 'affiliate_id' : url.affiliate_id })
-        .success(function(data) {
-            console.log('got token: '+ data.token);
-            purchase_token = data.token;
-            //transactApi.setToken(data.token);
-        })
-        .fail(function(data) {
-            console.log('Failed to get Transact token');
-        });
+    main_url = url;
+    ajax_url = url.ajaxurl;
 
-    // If subscription button is on the site, get subscription token too
-    if(document.getElementById('button_purchase subscription')) {
-        jQuery.getJSON(ajax_url, { 'action' : 'get_subscription_token', 'post_id' : url.post_id, 'affiliate_id' : url.affiliate_id })
+    if (url.donation == 1) {
+        // 10 is value by default defined on the html input
+        getDonationTokenAjaxCall(10);
+    } else {
+        jQuery.getJSON(ajax_url, { 'action' : 'get_token', 'post_id' : url.post_id, 'affiliate_id' : url.affiliate_id })
             .success(function(data) {
-                console.log('got subscribe_token: '+ data.token);
-                subscribe_token = data.token;
+                console.log('got token: '+ data.token);
+                purchase_token = data.token;
                 //transactApi.setToken(data.token);
             })
             .fail(function(data) {
                 console.log('Failed to get Transact token');
             });
+
+        // If subscription button is on the site, get subscription token too
+        if(document.getElementById('button_purchase subscription')) {
+            jQuery.getJSON(ajax_url, { 'action' : 'get_subscription_token', 'post_id' : url.post_id, 'affiliate_id' : url.affiliate_id })
+                .success(function(data) {
+                    console.log('got subscribe_token: '+ data.token);
+                    subscribe_token = data.token;
+                    //transactApi.setToken(data.token);
+                })
+                .fail(function(data) {
+                    console.log('Failed to get Transact token');
+                });
+        }
     }
 });
+
+/**
+ * Gets a new donate token every time the user changes donation value
+ */
+function setDonateAmount() {
+    var donate = jQuery('#donate_val').val();
+    if (!donate) {
+        alert('Invalid Donation Amount');
+        return;
+    }
+    console.log('setDonateAmount', donate);
+    getDonationTokenAjaxCall(donate);
+}
+
+/**
+ * AJAX call responsible of donation token
+ */
+function getDonationTokenAjaxCall(donate) {
+    jQuery.getJSON(ajax_url, { 'action' : 'get_donation_token', 'post_id' : url.post_id, 'price' : donate, 'affiliate_id' : main_url.affiliate_id })
+        .success(function(data) {
+            console.log('got donate_token: '+ data.token);
+            donate_token = data.token;
+            jQuery('#donation').removeAttr("disabled");
+        })
+        .fail(function(data) {
+            jQuery('#donation').attr("disabled");
+            console.log('Failed to get Transact donate token');
+        });
+}
 
 /**
  * onclick for purchase button
@@ -38,6 +77,14 @@ function doPurchase() {
     console.log('doPurchase');
     console.log('Setting Purchase token');
     transactApi.setToken(purchase_token);
+    // Call authorize() which will load the popup,
+    // passing in callback function (PurchasePopUpClosed)
+    transactApi.authorize(PurchasePopUpClosed);
+}
+
+function doDonate() {
+    console.log('doDonate');
+    transactApi.setToken(donate_token);
     // Call authorize() which will load the popup,
     // passing in callback function (PurchasePopUpClosed)
     transactApi.authorize(PurchasePopUpClosed);

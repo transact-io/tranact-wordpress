@@ -142,6 +142,28 @@ class TransactApi
         return json_encode($response);
     }
 
+    /**
+     * Get donation token
+     *
+     * @param $price
+     * @param string $affiliate_id
+     * @throws \Exception
+     */
+    function get_donation_token($price, $affiliate_id = null)
+    {
+        $this->init_sale_parameters($this->transact);
+        $this->transact->setPrice($price);
+
+        if ($affiliate_id) {
+            $this->transact->setAffiliate($affiliate_id);
+        }
+
+        $response = array(
+            'token' => $this->transact->getToken()
+        );
+        echo json_encode($response);
+    }
+
     function decode_token($token)
     {
         $this->transact->setSecret($this->secret_id);

@@ -61,6 +61,12 @@ class FrontEndPostExtension
         add_action( 'wp_ajax_get_subscription_token',        array($this, 'request_subscription_token_callback' ));
 
         /**
+         * Registering Ajax Calls on single post (Donation Token)
+         */
+        add_action( 'wp_ajax_nopriv_get_donation_token', array($this, 'request_donation_callback' ));
+        add_action( 'wp_ajax_get_donation_token',        array($this, 'request_donation_callback' ));
+
+        /**
          * Registering callback when user buys the item
          */
         add_action( 'wp_ajax_nopriv_get_purchased_content', array($this, 'purchased_content_callback' ));
@@ -114,6 +120,11 @@ class FrontEndPostExtension
             return;
         }
 
+        $donation = 0;
+        if ($this->check_if_post_is_under_donation($this->post_id)) {
+            $donation = 1;
+        }
+
         /**
          * Loading external library (JS API)
          */
@@ -122,7 +133,8 @@ class FrontEndPostExtension
             'url' => plugins_url('/ajax/ajax-call.php', __FILE__),
             'ajaxurl' => admin_url( 'admin-ajax.php' ),
             'post_id' => $this->post_id,
-            'affiliate_id' => $this->get_affiliate()
+            'affiliate_id' => $this->get_affiliate(),
+            'donation' => $donation
         );
 
         /**
@@ -192,6 +204,43 @@ class FrontEndPostExtension
         header('Content-Type: text/javascript; charset=utf8');
         echo $token;
         exit;
+    }
+
+    public function request_donation_callback()
+    {
+        if (!$this->check_if_post_is_under_donation($_REQUEST['post_id'])) {
+            header("HTTP/1.1 401 Unauthorized");
+            exit;
+        }
+
+        header('Content-Type: text/javascript; charset=utf8');
+        $transact = new TransactApi($_REQUEST['post_id']);
+        $price = (isset($_REQUEST['price']) && is_numeric($_REQUEST['price'])) ? $_REQUEST['price'] : null;
+        if (!$price) {
+            echo json_encode(new ErrorResponse('400', 'Invalid Price'));
+            exit;
+        }
+        $affiliate = (isset($_REQUEST['affiliate_id']) && is_numeric($_REQUEST['affiliate_id'])) ? $_REQUEST['affiliate_id'] : null;
+        $token = $transact->get_donation_token($price, $affiliate);
+        echo $token;
+        exit;
+    }
+
+    /**
+     * Checks if user has set $post_id as donation post
+     *
+     * @param $post_id
+     * @return bool
+     */
+    public function check_if_post_is_under_donation($post_id)
+    {
+        $options = get_option( 'transact-settings' );
+        if (isset($options['donations']) && $options['donations']) {
+            if (get_post_meta( $post_id, 'transact_donations' , true )) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
