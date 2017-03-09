@@ -69,3 +69,26 @@ $transact->setUid('UniqueSaleID');
     'anything' => 'you want'
   ));
 ```
+
+### Get token for normal purchase
+
+Get a token that will be passed to transact.js
+```php
+$transact->getToken();
+```
+
+### Get token for subscription
+
+Get a token that will be passed to transact.js
+```php
+$transact->getSubscriptionToken();
+```
+
+-------
+
+## Integrating  your HTML / javascript
+
+
+See the [Example in the demo](/demo/) folder
+
+

@@ -90,6 +90,10 @@ switch($_REQUEST['action']) {
 
     $transact = InitSaleParameters($transact);
 
+    if (!empty($_REQUEST['affiliate_id'])
+      && is_numeric($_REQUEST['affiliate_id'])) {
+        $transact->setAffiliate($_REQUEST['affiliate_id']);
+    }
     $response = array(
       'token' => $transact->getToken()
     );
@@ -122,6 +126,11 @@ switch($_REQUEST['action']) {
     // Optional Unique ID of this sale
     $transact->setUid('Donate_ID');
 
+    if (!empty($_REQUEST['affiliate_id'])
+      && is_numeric($_REQUEST['affiliate_id'])) {
+        $transact->setAffiliate($_REQUEST['affiliate_id']);
+    }
+
     $response = array(
       'token' => $transact->getToken()
     );
@@ -133,7 +142,7 @@ switch($_REQUEST['action']) {
     try {
       $decoded = $transact->decodeToken($_REQUEST['t']);
       echo json_encode(array(
-        'content' => 'SUCESSS PAID CONTENT HERE!',
+        'content' => 'SUCCESS PAID CONTENT HERE!',
         'status' => 'OK',
         'subscription' =>  $decoded->sub,
         'subscription_expires' =>  $decoded->sub_expires,

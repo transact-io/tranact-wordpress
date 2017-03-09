@@ -31,9 +31,14 @@
         <td>Other:<input type="text" id="other_server_input" size="70"
          value="https://frontend-dot-xsact-1304.appspot.com/purchase" onchange="setServer()"></td>
       </tr>
+
     </table>
 
+    Affiliate ID:
+    <input type="text" id="affiliate_id" name="affiliate_id" value="" onchange="updatePurchaseToken()">
 
+    <br>
+    <br>
     <button onclick="doPurcase()">Purchase on Xsact</button>
     <button onclick="doSubscription()">Subscribe</button>
     <hr>
@@ -95,15 +100,18 @@
         server = $('#other_server_input').val();
       }
       transactApi.setFrontendUrl(server);
-
     }
 
-    $( document ).ready(function() {
-      setServer(); // init
-      setDonateAmount();
-
+    function updatePurchaseToken() {
       // get token for us
       var data = { 'action' : 'getToken', url : document.location.href };
+
+      var affiliate_id = $('#affiliate_id').val().trim();
+      if (affiliate_id && affiliate_id == parseInt(affiliate_id)) {
+        data['affiliate_id'] = affiliate_id;
+        console.log('setting affiliate_id', affiliate_id);
+      }
+
       $.getJSON("demo-api.php", data)
       .done(function(data) {
         console.log('got purchase_token: '+ data.token);
@@ -113,6 +121,14 @@
           console.log('Error Response data:', resp_data);
           alert('failed to get sessionId');
       });
+    }
+
+
+    $( document ).ready(function() {
+      setServer(); // init
+      setDonateAmount();
+      updatePurchaseToken();
+
 
       var data = { 'action' : 'getSubscriptionToken', url : document.location.href };
       $.getJSON("demo-api.php", data)
