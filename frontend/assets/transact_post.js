@@ -16,7 +16,7 @@ jQuery(function() {
     }
 
     if (url.donation == 1) {
-        getDonationTokenAjaxCall(url.price);
+        getDonationTokenAjaxCall(url.price); 
     } else {
         jQuery.getJSON(ajax_url, { 'action' : 'get_token', 'post_id' : url.post_id, 'affiliate_id' : url.affiliate_id })
             .success(function(data) {
