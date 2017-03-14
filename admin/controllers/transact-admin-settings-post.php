@@ -272,6 +272,7 @@ class AdminSettingsPostExtension
                     </option>
                 <?php endforeach;?>
             </select>
+            <br/>
             <?php
         }
         ?>

@@ -164,7 +164,8 @@ class FrontEndPostExtension
             'ajaxurl' => admin_url( 'admin-ajax.php' ),
             'post_id' => $this->post_id,
             'affiliate_id' => $this->get_affiliate(),
-            'donation' => $donation
+            'donation' => $donation,
+            'price' => get_post_meta($this->post_id, 'transact_price', true )
         );
 
         if (strlen($redirect_page) > 0) {

@@ -79,8 +79,9 @@ class transactHandleButtons
      * @return string
      */
     public function print_donation_button() {
+        $price = get_post_meta($this->post_id, 'transact_price', true );
         $button = $this->print_donate_button($this->options);
-        $input = '<input type="number" name="donate" id="donate_val" onchange="setDonateAmount()" value="10"/>';
+        $input = '<input type="number" name="donate" id="donate_val" onchange="setDonateAmount()" value="'.$price.'"/>';
         return $button . $input;
     }
 
