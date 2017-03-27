@@ -8,6 +8,9 @@ var main_url = {}; // Main url
 var custom_redirect = ''; // Custom redirect (after donation for instance)
 
 jQuery(function() {
+    // Trying to find comments closed text to substitute via js (this string is created by the theme, no control there )
+    document.body.innerHTML = document.body.innerHTML.replace(/Comments are closed./g, 'You must purchase this article with Transact or subscribe to read or post comments.');
+
     main_url = url;
     ajax_url = url.ajaxurl;
 
