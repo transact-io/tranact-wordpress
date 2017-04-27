@@ -76,6 +76,9 @@ We are cheaper than any credit card service for small amounts.
 
 == Changelog ==
 
+= 1.5.1 =
+* shortcode fix
+
 = 1.5.0 =
 * Comments closed without purhase
 
