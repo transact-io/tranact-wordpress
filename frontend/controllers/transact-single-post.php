@@ -119,7 +119,7 @@ class FrontEndPostExtension
     {
         $premium_content = get_post_meta( $this->post_id, 'transact_premium_content' , true ) ;
         // wpautop emulates normal wp editor behaviour (adding <p> automatically)
-        return wpautop(htmlspecialchars_decode($premium_content));
+        return wpautop(htmlspecialchars_decode(do_shortcode($premium_content)));
     }
 
     /**
