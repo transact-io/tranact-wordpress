@@ -130,7 +130,14 @@ class AdminSettingsPostExtension
         // Update the meta field.
         update_post_meta( $post_id, 'transact_price', $mydata[1] );
 
+        /**
+         * Set up a stamp to allow other plugins to know when you are premium content
+         */
+        $transact_stamp = '<div id="transact_premium_content_stamp"></div>';
         $content = htmlspecialchars( $_POST['transact_premium_content'] );
+        if (!strpos($content, 'transact_premium_content_stamp')) {
+            $content = $transact_stamp . $content;
+        }
         update_post_meta( $post_id, 'transact_premium_content', $content );
 
         $display_button = sanitize_text_field( $_POST['transact_display_button'] );
