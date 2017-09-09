@@ -44,6 +44,11 @@ jQuery(function() {
                 });
         }
     }
+
+    transactApi.getCurrentPromo('en', function(arg, result) {
+        var promoBlock = jQuery('#transact_promo');
+        promoBlock.html(result.text);
+    });
 });
 
 /**

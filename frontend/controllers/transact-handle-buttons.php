@@ -16,6 +16,7 @@ class transactHandleButtons
     const TOKEN_TEXT = 'cent';
     const SUBSCRIBE_TEXT = 'Subscribe';
     const DONATE_TEXT = 'Donate';
+    const CTA_TEXT = 'Purchase with Transact or subscribe to read the full story';
 
     /**
      * Keys for buttons options, by default PURCHASE_AND_SUBSCRIPTION
@@ -126,11 +127,14 @@ class transactHandleButtons
         $background_fade_color_style = '';
         if(isset($options['page_background_color'])) {
             list($r, $g, $b) = sscanf($options['page_background_color'], "#%02x%02x%02x");
-            $background_fade_color_style = "background:linear-gradient(to bottom, rgba($r,$g,$b,0), rgba($r,$g,$b,1) 68%, rgba($r,$g,$b,1))";
+            $background_fade_color_style = "background:linear-gradient(to bottom, rgba($r,$g,$b,0), rgba($r,$g,$b,1) 105px, rgba($r,$g,$b,1))";
         }
 
         $output = sprintf(
-            '<div class="transact_purchase_button" style="%s"><table><tr>',
+            '<div class="transact_purchase_button" style="%s">' .
+            '<h3 class="cta">' . self::CTA_TEXT . '</h3>' .
+            '<h4 class="transact_promo" id="transact_promo"></h4>' .
+            '<table><tr>',
             $background_fade_color_style
         );
 

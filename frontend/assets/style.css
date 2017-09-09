@@ -1,12 +1,28 @@
 .transact_purchase_button {
   margin-bottom: 1.25rem;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 68%, rgba(255, 255, 255, 1));
-  height: 150px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 105px, rgba(255, 255, 255, 1));
   position: relative;
   margin-top: -125px;
   padding-top: 125px;
   z-index: 1;
 }
+.transact_purchase_button 
+  .cta {
+    font-weight: normal;
+    text-transform: uppercase;
+    font-size: 11pt;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+.transact_purchase_button 
+  .transact_promo {
+    color: #19a5ae;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+    font-size: 12pt;
+    margin-bottom: 6px;
+  }
 .transact_purchase_button 
   table {
     width: 100%;
@@ -34,14 +50,15 @@
     text-transform: uppercase;
     border: 1px solid transparent;
     color: white;
-    font-size: 8pt;
+    font-size: 9pt;
+    white-space: nowrap;
     border-radius: 2px;
     padding: 6px 8px;
-    padding-left: 22px;
+    padding-left: 28px;
     cursor: pointer;
     background-image: url(transact_icon.png);
     background-repeat: no-repeat;
-    background-size: 11px;
+    background-size: 12px;
     background-position: 9px 50%;
     width: 100%;
   }
