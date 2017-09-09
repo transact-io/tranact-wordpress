@@ -52,25 +52,30 @@ class transactHandleButtons
      */
     public function print_buttons()
     {
+        $buttons = array();
+
         if ($this->get_if_article_donation()) {
-            return $this->print_donation_button();
+            array_push($buttons, $this->print_donation_button());
         } else {
             $button_type = $this->get_button_type();
             switch($button_type) {
                 case (self::PURCHASE_AND_SUBSCRIPTION):
-                    return $this->print_purchase_and_subscription($this->options, $this->transact_api);
+                    array_push($buttons, $this->print_single_button($options, $transact_api, self::ONLY_PURCHASE));
+                    array_push($buttons, $this->print_single_button($options, $transact_api, self::ONLY_SUBSCRIBE));
                     break;
+
                 case (self::ONLY_PURCHASE):
-                    return $this->print_single_button($this->options, $this->transact_api, $button_type);
-                    break;
                 case (self::ONLY_SUBSCRIBE):
-                    return $this->print_single_button($this->options, $this->transact_api, $button_type);
+                    array_push($buttons, $this->print_single_button($this->options, $this->transact_api, $button_type));
                     break;
+
                 default:
-                    return $this->print_single_button($this->options, $this->transact_api, self::ONLY_PURCHASE);
+                    array_push($buttons, $this->print_single_button($this->options, $this->transact_api, self::ONLY_PURCHASE));
                     break;
             }
         }
+
+        return $this->wrap_buttons($this->options, $this->transact_api, $buttons);
     }
 
     /**
@@ -110,17 +115,32 @@ class transactHandleButtons
     }
 
     /**
-     * It prints purchase button and subscription button together
+     * It prints a block containing supplied buttons along with background fade and any supporting text
      *
      * @param $options
      * @param $transact_api
-     * @return string
+     * @param $buttons array containing html for each button
+     * @return string html table with supplied buttons
      */
-    protected function print_purchase_and_subscription($options, $transact_api)
-    {
-        $content = $this->print_single_button($options, $transact_api, self::ONLY_PURCHASE);
-        $content .= $this->print_single_button($options, $transact_api, self::ONLY_SUBSCRIBE);
-        return $content;
+    protected function wrap_buttons($options, $transact_api, $buttons) {
+        $background_fade_color_style = '';
+        if(isset($options['page_background_color'])) {
+            list($r, $g, $b) = sscanf($options['page_background_color'], "#%02x%02x%02x");
+            $background_fade_color_style = "background:linear-gradient(to bottom, rgba($r,$g,$b,0), rgba($r,$g,$b,1) 68%, rgba($r,$g,$b,1))";
+        }
+
+        $output = sprintf(
+            '<div class="transact_purchase_button" style="%s"><table><tr>',
+            $background_fade_color_style
+        );
+
+        for ($i = 0; $i < count($buttons); $i++) {
+            $output .= '<td>' . $buttons[$i] . '</td>';
+        }
+
+        $output .= '</tr></table></div>';
+
+        return $output;
     }
 
     /**
@@ -137,18 +157,12 @@ class transactHandleButtons
 
         $button_background_color_style = (isset($options['background_color']) ? 'background-color:' . esc_attr($options['background_color']) . ';' : '');
         $button_text_color_style = (isset($options['text_color']) ? 'color:' . esc_attr($options['text_color']) . ';' : '');
-        $background_fade_color_style = '';
-        if(isset($options['page_background_color'])) {
-            list($r, $g, $b) = sscanf($options['page_background_color'], "#%02x%02x%02x");
-            $background_fade_color_style = "background:linear-gradient(to bottom, rgba($r,$g,$b,0), rgba($r,$g,$b,1) 68%, rgba($r,$g,$b,1))";
-        }
 
         $onclick = ($button_type == self::ONLY_PURCHASE) ? 'doPurchase()' : 'doSubscription()';
         $extra_id = ($button_type == self::ONLY_PURCHASE) ? 'purchase' : 'subscription';
 
         $button = sprintf(
-            '<div class="transact_purchase_button fade" style="%s"><button style="%s" id="button_purchase %s" onclick="%s">%s</button></div>',
-            $background_fade_color_style,
+            '<button style="%s" id="button_purchase_%s" onclick="%s">%s</button>',
             $button_background_color_style . $button_text_color_style,
             $extra_id,
             $onclick,

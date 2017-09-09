@@ -1,43 +1,57 @@
-.transact_purchase_button button,
-.transact_purchase_button button:hover {
-  background-color: #19a5ae;
-  border: 0;
-  color: white;
-  font-size: 10pt;
-  border-radius: 5px;
-  padding: 6px 16px;
-  padding-left: 40px;
-  cursor: pointer;
-  background-image: url(transact_icon.png);
-  background-repeat: no-repeat;
-  background-size: 14px;
-  background-position: 13px 50%;
-}
-
-.transact_purchase_button.fade {
+.transact_purchase_button {
   margin-bottom: 1.25rem;
   background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 68%, rgba(255, 255, 255, 1));
   height: 150px;
   position: relative;
   margin-top: -125px;
+  padding-top: 125px;
   z-index: 1;
 }
-.fade + .fade {
-  background: none !important;
-  margin-top: 0;
-  height: auto;
-}
+.transact_purchase_button 
+  table {
+    width: 100%;
+  }
+.transact_purchase_button 
+  table 
+    tr {
+      border: 0;
+    }
+.transact_purchase_button 
+  table 
+    td {
+      width: 50%;
+      text-align: center;
+    }
 
-.transact_purchase_button.fade button {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 0;
-}
-.fade + .fade button {
-  bottom: auto;
-  top: 0;
-}
+.transact_purchase_button 
+  button,
+.transact_purchase_button 
+  button:hover,
+.transact_purchase_button 
+  button:focus {
+    background-color: #19a5ae;
+    font-weight: normal;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+    color: white;
+    font-size: 8pt;
+    border-radius: 2px;
+    padding: 6px 8px;
+    padding-left: 22px;
+    cursor: pointer;
+    background-image: url(transact_icon.png);
+    background-repeat: no-repeat;
+    background-size: 11px;
+    background-position: 9px 50%;
+    width: 100%;
+  }
+.transact_purchase_button 
+  button#button_purchase_subscription {
+    padding-left: 8px;
+    background: white;
+    color: black;
+    border: 1px solid black;
+  }
 
 body.toplevel_page_transact-admin-page input[type='color'] {
   padding: 0px 2px;
