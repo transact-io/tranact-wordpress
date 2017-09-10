@@ -76,6 +76,9 @@ We are cheaper than any credit card service for small amounts.
 
 == Changelog ==
 
+= 1.6.0 =
+* promo text fetching,  button styling
+
 = 1.5.2 =
 * content stamp
 
