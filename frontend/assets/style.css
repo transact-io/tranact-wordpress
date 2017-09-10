@@ -26,6 +26,8 @@
 .transact_purchase_button 
   table {
     width: 100%;
+    table-layout: auto !important;
+    border: 0;
   }
 .transact_purchase_button 
   table 
@@ -37,6 +39,7 @@
     td {
       width: 50%;
       text-align: center;
+      border: 0;
     }
 
 .transact_purchase_button 
