@@ -3,7 +3,7 @@ Contributors: transact
 Donate link: https://transact.io/
 Tags: payments, micropayments, e-commerce, paywall, free, pay, online payment, subscription, subscriptions, monetization, premium content, premium, paywall, pay per view, content monetization, donations
 Requires at least: 4.5
-Tested up to: 4.7.1
+Tested up to: 4.8.1
 Stable tag: 4.3
 License: APACHE-2.0
 License URI: https://www.apache.org/licenses/LICENSE-2.0
