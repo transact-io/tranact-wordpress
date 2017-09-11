@@ -20,3 +20,4 @@ This plugin integrates transact.io easily in your Wordpress installation.
 5. Options are 'button_text' 'subscribe_text', 'button_type'
 6. "Purchase and Subscribe button" = 1, "Only Purchase Button" = 2, "Only Subscribe button" = 3
 6. Example: [transact_button button_text="purchase me" subscribe_text="subscribe to the site" button_type="1"]
+
