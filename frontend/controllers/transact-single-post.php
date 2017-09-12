@@ -94,7 +94,7 @@ class FrontEndPostExtension
          * If it is not the scope, we return the normal content (could be used in a archive for instance)
          */
         if (!$this->check_scope()) {
-            //return $content;
+            return $content;
         }
 
         $transact_api = new TransactApi($this->post_id);
