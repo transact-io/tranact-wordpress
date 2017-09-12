@@ -168,6 +168,15 @@ class AdminSettingsMenuExtension
             array('page_background_color') // Default value
         );
 
+        add_settings_field(
+            'show_count_words',
+            'Show Words Count',
+            array( $this, 'words_count_input_callback' ),
+            'transact-settings',
+            'xct_button_style',
+            array(false) // Default value
+        );
+
         /*
          * Donations Manager
          */
@@ -342,6 +351,36 @@ class AdminSettingsMenuExtension
             $field,
             isset( $options[$field] ) ? esc_attr( $options[$field]) : $default_color
         );
+    }
+
+    public function words_count_input_callback($args)
+    {
+        $options = get_option('transact-settings');
+        $words_count_options = isset($options['show_count_words']) ? $options['show_count_words'] : 0;
+
+        $words_count_selected = ($words_count_options) ? 'checked' : '';
+        $checkbox_value = ($words_count_options) ? 1 : 0;
+
+        ?>
+        <script>
+            // Handles checkbox for subscription
+            function setValue(id) {
+                if( jQuery(id).is(':checked')) {
+                    jQuery(id).val(1);
+                } else {
+                    jQuery(id).val(0);
+                }
+            }
+        </script>
+
+        <input <?php echo $words_count_selected; ?>
+            id="show_count_words"
+            type="checkbox"
+            onclick="setValue(show_count_words)"
+            name="transact-settings[show_count_words]"
+            value="<?php echo $checkbox_value; ?>"
+            />
+        <?php
     }
 
     /**
