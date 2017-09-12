@@ -94,7 +94,7 @@ class FrontEndPostExtension
          * If it is not the scope, we return the normal content (could be used in a archive for instance)
          */
         if (!$this->check_scope()) {
-            return $content;
+            //return $content;
         }
 
         $transact_api = new TransactApi($this->post_id);
@@ -134,7 +134,12 @@ class FrontEndPostExtension
         global $post;
         if (!has_shortcode($post->post_content, 'transact_button')) {
             $button_controller = new transactHandleButtons($this->post_id, $transact_api);
-            $content = $content . $button_controller->print_buttons();
+            $options = get_option('transact-settings');
+            $count_words = false;
+            if (isset($options['show_count_words']) && $options['show_count_words']) {
+                $count_words = str_word_count(strip_tags($content));
+            }
+            $content = $content . $button_controller->print_buttons($count_words);
         }
         return $content;
     }
