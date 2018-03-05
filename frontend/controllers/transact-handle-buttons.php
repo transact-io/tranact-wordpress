@@ -49,29 +49,35 @@ class transactHandleButtons
      * Will check if user wants donation on this article, in that case will show donation placeholder otherwise
      * Will check if the user have a subscription and which kind of button want to use (given on post settings)
      *
+     * @param null|int $number_of_words
+
+     *
      * @return string
      */
-    public function print_buttons()
+    public function print_buttons( $number_of_words = null )
     {
         $buttons = array();
 
         if ($this->get_if_article_donation()) {
-            array_push($buttons, $this->print_donation_button());
+            array_push($buttons, $this->print_donation_button($number_of_words));
         } else {
             $button_type = $this->get_button_type();
             switch($button_type) {
                 case (self::PURCHASE_AND_SUBSCRIPTION):
-                    array_push($buttons, $this->print_single_button($options, $transact_api, self::ONLY_PURCHASE));
-                    array_push($buttons, $this->print_single_button($options, $transact_api, self::ONLY_SUBSCRIBE));
+                    array_push($buttons, $this->print_single_button($this->options, $this->transact_api, self::ONLY_PURCHASE, $number_of_words));
+                    array_push($buttons, $this->print_single_button($this->options, $this->transact_api, self::ONLY_SUBSCRIBE));
                     break;
 
                 case (self::ONLY_PURCHASE):
+                    array_push($buttons, $this->print_single_button($this->options, $this->transact_api, $button_type, $number_of_words));
+                    break;
+
                 case (self::ONLY_SUBSCRIBE):
                     array_push($buttons, $this->print_single_button($this->options, $this->transact_api, $button_type));
                     break;
 
                 default:
-                    array_push($buttons, $this->print_single_button($this->options, $this->transact_api, self::ONLY_PURCHASE));
+                    array_push($buttons, $this->print_single_button($this->options, $this->transact_api, self::ONLY_PURCHASE, $number_of_words));
                     break;
             }
         }
@@ -82,11 +88,12 @@ class transactHandleButtons
     /**
      * Returning full donation button with price input.
      *
+     * @param $number_of_words
      * @return string
      */
-    public function print_donation_button() {
+    public function print_donation_button($number_of_words = null) {
         $price = get_post_meta($this->post_id, 'transact_price', true );
-        $button = $this->print_donate_button($this->options);
+        $button = $this->print_donate_button($this->options, $number_of_words);
         $input = '<input type="number" name="donate" id="donate_val" onchange="setDonateAmount()" value="'.$price.'"/>';
         return $button . $input;
     }
@@ -153,11 +160,13 @@ class transactHandleButtons
      * @param $options
      * @param $transact_api
      * @param $button_type button type to print subscription or purchase
+     * @param null|int $number_of_words number of words it they need to be set on the button
      * @return string html button
      */
-    protected function print_single_button($options, $transact_api, $button_type)
+    protected function print_single_button($options, $transact_api, $button_type, $number_of_words = null)
     {
         $button_text = $this->get_button_text($button_type);
+        $button_text .= ($number_of_words) ? " ($number_of_words words)" : '';
 
         $button_background_color_style = (isset($options['background_color']) ? 'background-color:' . esc_attr($options['background_color']) . ';' : '');
         $button_text_color_style = (isset($options['text_color']) ? 'color:' . esc_attr($options['text_color']) . ';' : '');
@@ -180,11 +189,13 @@ class transactHandleButtons
      * Taking care or printing only button with transact styling taken from settings
      *
      * @param $options
+     * @param $number_of_words
      * @return string
      */
-    protected function print_donate_button($options)
+    protected function print_donate_button($options, $number_of_words = null)
     {
         $button_text = self::DONATE_TEXT;
+        $button_text .= ($number_of_words) ? " ($number_of_words words)" : '';
 
         $button_background_color_style = (isset($options['background_color']) ? 'background-color:' . esc_attr($options['background_color']) . ';' : '');
         $button_text_color_style = (isset($options['text_color']) ? 'color:' . esc_attr($options['text_color']) . ';' : '');
