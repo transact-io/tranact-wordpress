@@ -181,7 +181,7 @@ class FrontEndPostExtension
          * Loading transact scripts (callbacks)
          */
         wp_register_script( 'transact_callback',  FRONTEND_ASSETS_URL . 'transact_post.js', array('jquery') );
-        wp_localize_script( 'transact_callback', 'url', $url );
+        wp_localize_script( 'transact_callback', 'transact_params', $url );
         wp_enqueue_script( 'transact_callback' );
     }
 
