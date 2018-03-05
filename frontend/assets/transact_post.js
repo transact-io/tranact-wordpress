@@ -1,27 +1,22 @@
 var package = {};
-
 var purchase_token = {}; // token used for buying single item
 var subscribe_token = {}; // subscription token
 var donate_token = {}; // donate token
 var ajax_url = {}; // Ajax URL
-var main_url = {}; // Main url
 var custom_redirect = ''; // Custom redirect (after donation for instance)
 
 jQuery(function() {
     // Trying to find comments closed text to substitute via js (this string is created by the theme, no control there )
     document.body.innerHTML = document.body.innerHTML.replace(/Comments are closed./g, 'You must purchase this article with Transact or subscribe to read or post comments.');
 
-    main_url = url;
-    ajax_url = url.ajaxurl;
-
-    if (url.redirect_after_donation) {
-        custom_redirect = url.redirect_after_donation;
+    if (transact_params.redirect_after_donation) {
+        custom_redirect = transact_params.redirect_after_donation;
     }
 
-    if (url.donation == 1) {
-        getDonationTokenAjaxCall(url.price); 
+    if (transact_params.donation == 1) {
+        getDonationTokenAjaxCall(transact_params.price);
     } else {
-        jQuery.getJSON(ajax_url, { 'action' : 'get_token', 'post_id' : url.post_id, 'affiliate_id' : url.affiliate_id })
+        jQuery.getJSON(transact_params.ajaxurl, { 'action' : 'get_token', 'post_id' : transact_params.post_id, 'affiliate_id' : transact_params.affiliate_id })
             .success(function(data) {
                 console.log('got token: '+ data.token);
                 purchase_token = data.token;
@@ -33,7 +28,7 @@ jQuery(function() {
 
         // If subscription button is on the site, get subscription token too
         if(document.getElementById('button_purchase subscription')) {
-            jQuery.getJSON(ajax_url, { 'action' : 'get_subscription_token', 'post_id' : url.post_id, 'affiliate_id' : url.affiliate_id })
+            jQuery.getJSON(transact_params.ajaxurl, { 'action' : 'get_subscription_token', 'post_id' : transact_params.post_id, 'affiliate_id' : transact_params.affiliate_id })
                 .success(function(data) {
                     console.log('got subscribe_token: '+ data.token);
                     subscribe_token = data.token;
@@ -68,7 +63,7 @@ function setDonateAmount() {
  * AJAX call responsible of donation token
  */
 function getDonationTokenAjaxCall(donate) {
-    jQuery.getJSON(ajax_url, { 'action' : 'get_donation_token', 'post_id' : url.post_id, 'price' : donate, 'affiliate_id' : main_url.affiliate_id })
+    jQuery.getJSON(transact_params.ajaxurl, { 'action' : 'get_donation_token', 'post_id' : transact_params.post_id, 'price' : donate, 'affiliate_id' : transact_params.affiliate_id })
         .success(function(data) {
             console.log('got donate_token: '+ data.token);
             donate_token = data.token;
@@ -119,7 +114,7 @@ function doSubscription() {
 
 function PurchasePopUpClosed(popup, event) {
 
-    var ajax_url = url.ajaxurl;
+    var ajax_url = transact_params.ajaxurl;
     console.log('PurchasePopUpClosed');
     console.log('Event data:', event.data);
 
@@ -127,7 +122,7 @@ function PurchasePopUpClosed(popup, event) {
         console.log(event.data);
         var validation_data = event.data;
         validation_data.action = 'get_purchased_content';
-        validation_data.post_id = url.post_id;
+        validation_data.post_id = transact_params.post_id;
 
         var jqxhr = jQuery.getJSON(ajax_url, validation_data)
             .done(function(resp_data) {
