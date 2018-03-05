@@ -1,7 +1,7 @@
 === Transact ===
 Contributors: transact
 Donate link: https://transact.io/
-Tags: payments, micropayments, e-commerce, paywall, free, pay, online payment, subscription, subscriptions, monetization, premium content, premium, paywall, pay per view, content monetization, donations
+Tags: payments, micropayments, e-commerce, paywall, subscription, subscriptions, monetization, premium content, premium, paywall, pay-per-view, content monetization, donations, pay
 Requires at least: 4.5
 Tested up to: 4.9.4
 Stable tag: 1.7.0
