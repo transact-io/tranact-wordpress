@@ -230,6 +230,9 @@ class AdminSettingsPostExtension
             <?php _e( 'Premium Price', 'transact' ); ?>
         </label>
         <input type="number" min="1" max="99999" id="transact_price" name="transact_price" value="<?php echo esc_attr( $value[1] ); ?>" />
+        <?php if (strlen($value[1] == 0)) : ?>
+            <span style="color: red;"><?php _e('You need to set a price!', 'transact');?></span>
+        <?php endif; ?>
         <br/>
         <label for="transact_item_code">
             <?php _e( 'Item Code', 'transact' ); ?>

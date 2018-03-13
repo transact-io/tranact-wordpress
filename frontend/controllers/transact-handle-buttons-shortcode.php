@@ -35,12 +35,14 @@ class transactHandleShortcodeButtons extends transactHandleButtons
     /**
      * Avoid to show buttons on archive
      *
+     * @param null $number_of_words
+     *
      * @return string
      */
-    public function print_buttons()
+    public function print_buttons( $number_of_words = null )
     {
         if ($this->is_single) {
-            return parent::print_buttons();
+            return parent::print_buttons($number_of_words);
         } else {
             return '';
         }
