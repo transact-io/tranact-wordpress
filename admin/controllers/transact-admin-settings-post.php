@@ -130,14 +130,7 @@ class AdminSettingsPostExtension
         // Update the meta field.
         update_post_meta( $post_id, 'transact_price', $mydata[1] );
 
-        /**
-         * Set up a stamp to allow other plugins to know when you are premium content
-         */
-        $transact_stamp = '<div id="transact_premium_content_stamp"></div>';
         $content = htmlspecialchars( $_POST['transact_premium_content'] );
-        if (!strpos($content, 'transact_premium_content_stamp')) {
-            $content = $transact_stamp . $content;
-        }
         update_post_meta( $post_id, 'transact_premium_content', $content );
 
         $display_button = sanitize_text_field( $_POST['transact_display_button'] );
@@ -212,27 +205,48 @@ class AdminSettingsPostExtension
          *  todo: comments premium future development
          *
         <script>
-            // Handles checkbox for premium comments
-            jQuery( document ).ready(function() {
-                jQuery('#transact_premium_comments').click(function(){
-                    if( jQuery("#transact_premium_comments").is(':checked')) {
-                        jQuery("#transact_premium_comments").val(1);
-                    } else {
-                        jQuery("#transact_premium_comments").val(0);
-                    }
-                });
-            });
+        // Handles checkbox for premium comments
+        jQuery( document ).ready(function() {
+        jQuery('#transact_premium_comments').click(function(){
+        if( jQuery("#transact_premium_comments").is(':checked')) {
+        jQuery("#transact_premium_comments").val(1);
+        } else {
+        jQuery("#transact_premium_comments").val(0);
+        }
+        });
+        });
         </script>
-        **/
+         **/
         ?>
         <br xmlns="http://www.w3.org/1999/html"/>
         <label for="transact_price">
             <?php _e( 'Premium Price', 'transact' ); ?>
         </label>
+        <script>
+            function tinymce_content(id) {
+                var content;
+                var editor = tinyMCE.get(id);
+                var textArea = jQuery('textarea#' + id);
+                if (textArea.length>0 && textArea.is(':visible')) {
+                    content = textArea.val();
+                } else {
+                    content = editor.getContent();
+                }
+                return content;
+            }
+            jQuery('#publish').click(function(event) {
+                var content = tinymce_content('transact_premium_content');
+                if (content.length > 0) {
+                    jQuery("#transact_price").prop('required',true);
+                    document.getElementById('price_alert').style.display = 'block';
+                } else {
+                    jQuery("#transact_price").prop('required',false);
+                    document.getElementById('price_alert').style.display = 'none';
+                }
+            });
+        </script>
         <input type="number" min="1" max="99999" id="transact_price" name="transact_price" value="<?php echo esc_attr( $value[1] ); ?>" />
-        <?php if (strlen($value[1] == 0)) : ?>
-            <span style="color: red;"><?php _e('You need to set a price!', 'transact');?></span>
-        <?php endif; ?>
+        <span id="price_alert" style="color: red; display: none;"><?php _e('You need to set a price!', 'transact');?></span>
         <br/>
         <label for="transact_item_code">
             <?php _e( 'Item Code', 'transact' ); ?>
@@ -321,7 +335,7 @@ class AdminSettingsPostExtension
          *  todo: comments premium future development
          *
         <label for="transact_premium_comments">
-            <?php _e( 'Premium comments', 'transact' ); ?>
+        <?php _e( 'Premium comments', 'transact' ); ?>
         </label>
         <input type="checkbox" id="transact_premium_comments" name="transact_premium_comments" value="<?php echo esc_attr( $value[4] ); ?>" <?php echo $premium_comment_selected; ?>/>
         <br/>
